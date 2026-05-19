@@ -1,36 +1,41 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# LoopIn
 
-## Getting Started
+디지털 직무 학습자를 위한 탐색 중심 EduTech 플랫폼.
+흩어진 학습 자료를 모아 나만의 학습 아카이브를 만들어보세요.
 
-First, run the development server:
+> 검색 → 필터 → 저장(My Loop) → 재탐색 → 이어 학습
+
+## 기술 스택
+
+- **프레임워크**: Next.js 15 (App Router)
+- **언어**: TypeScript
+- **스타일**: Tailwind CSS / shadcn/ui
+- **폰트**: Pretendard
+- **패키지 매니저**: pnpm
+
+## 시작하기
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+브라우저에서 [http://localhost:3000](http://localhost:3000)을 열면 확인할 수 있습니다.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 폴더 구조
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+app/          # Next.js App Router 페이지
+components/   # UI 컴포넌트
+lib/          # 타입, 유틸리티, mock 데이터
+public/       # 정적 파일 (이미지, 아이콘, 폰트)
+```
 
-## Learn More
+## 주요 화면
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| 경로 | 설명 |
+|------|------|
+| `/` | 홈 (Hero, 탐색 섹션) |
+| `/search` | 검색 및 필터 |
+| `/resources/[id]` | 자료 상세 |
+| `/my-loop` | 나의 학습 아카이브 |
