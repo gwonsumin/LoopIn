@@ -6,7 +6,6 @@ import Link from "next/link"
 import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { ResourceCreateSchema, type ResourceCreateInput } from "@/lib/validations/resource"
-import { mockResources } from "@/lib/mock/resources"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 
@@ -101,21 +100,15 @@ export default function ResourceNewPage() {
     setValue("tags", tags.filter((t) => t !== tag), { shouldValidate: true })
   }
 
-  function onSubmit(data: ResourceCreateInput) {
-    const id = `r-${Date.now()}`
-    mockResources.unshift({
-      id,
-      title: data.title,
-      description: data.description,
-      url: data.url,
-      category: data.category,
-      level: data.level,
-      type: data.type,
-      tags: data.tags,
-      savedCount: 0,
-      createdAt: new Date().toISOString(),
+  async function onSubmit(data: ResourceCreateInput) {
+    const res = await fetch('/api/resources', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
     })
-    setNewId(id)
+    if (!res.ok) throw new Error('등록 실패')
+    const resource = await res.json()
+    setNewId(resource.id)
   }
 
   function handleReset() {

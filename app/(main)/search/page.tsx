@@ -3,7 +3,7 @@
 import { Suspense, useState } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import Link from "next/link"
-import { mockResources } from "@/lib/mock/resources"
+import { useQuery } from "@tanstack/react-query"
 import FilterPanel, { type FilterSelected } from "@/components/search/FilterPanel"
 import SortBar from "@/components/search/SortBar"
 import { ResourceCard } from "@/components/search/ResourceCard"
@@ -182,23 +182,29 @@ function SearchContent() {
     window.scrollTo({ top: 0, behavior: "smooth" })
   }
 
-  // ── 필터링 ──────────────────────────────────────────────────────────────
-  const filtered = mockResources
-    .filter(
-      (r) => !q || r.title.includes(q) || r.tags.some((t) => t.includes(q))
-    )
-    .filter((r) => !category || r.category === category)
-    .filter((r) => !level || r.level === level)
-    .filter((r) => !types.length || types.includes(r.type))
-    .sort((a, b) =>
-      sort === "popular"
-        ? b.savedCount - a.savedCount
-        : new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    )
+  // ── API 쿼리 ────────────────────────────────────────────────────────────
+  const { data: result, isLoading } = useQuery({
+    queryKey: ["resources", { q, category, level, type: typeParam, sort, page }],
+    queryFn: async () => {
+      const params = new URLSearchParams()
+      if (q)        params.set("q", q)
+      if (category) params.set("category", category)
+      if (level)    params.set("level", level)
+      if (typeParam) params.set("type", typeParam)
+      params.set("sort", sort)
+      params.set("page", String(page))
+      params.set("limit", String(PAGE_SIZE))
+      const res = await fetch(`/api/resources?${params}`)
+      if (!res.ok) throw new Error("검색 실패")
+      return res.json() as Promise<{ data: import("@/lib/types").Resource[]; total: number; totalPages: number; page: number }>
+    },
+    staleTime: 30_000,
+    placeholderData: (prev) => prev,
+  })
 
-  const total      = filtered.length
-  const totalPages = Math.ceil(total / PAGE_SIZE)
-  const paginated  = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
+  const total      = result?.total ?? 0
+  const totalPages = result?.totalPages ?? 1
+  const paginated  = result?.data ?? []
 
   const selected: FilterSelected = { category, level, types }
   const activeFilterCount =
@@ -283,7 +289,13 @@ function SearchContent() {
           />
 
           {/* 결과 or 빈 상태 */}
-          {total === 0 ? (
+          {isLoading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+              {Array.from({ length: PAGE_SIZE }).map((_, i) => (
+                <div key={i} className="rounded-2xl border border-neutral-100 bg-white p-5 h-52 animate-pulse" />
+              ))}
+            </div>
+          ) : total === 0 ? (
             <EmptyState q={q} onReset={handleReset} />
           ) : (
             <>

@@ -1,41 +1,49 @@
 # LoopIn
 
-디지털 직무 학습자를 위한 탐색 중심 EduTech 플랫폼.
-흩어진 학습 자료를 모아 나만의 학습 아카이브를 만들어보세요.
-
-> 검색 → 필터 → 저장(My Loop) → 재탐색 → 이어 학습
+디지털 직무 학습자를 위한 탐색 중심 EduTech 플랫폼
 
 ## 기술 스택
 
-- **프레임워크**: Next.js 15 (App Router)
-- **언어**: TypeScript
-- **스타일**: Tailwind CSS / shadcn/ui
-- **폰트**: Pretendard
-- **패키지 매니저**: pnpm
+- Next.js 16 App Router / TypeScript
+- Tailwind CSS v4
+- MongoDB Atlas / Mongoose
+- NextAuth.js v5 (Google OAuth)
+- TanStack Query v5
+- Vercel 배포
 
-## 시작하기
+## 주요 기능
+
+- A. 학습 자료 통합 검색 + 필터
+- B. 자료 카드 & 상세 보기
+- C. 자료 등록 폼
+- D. My Loop (개인 학습 아카이브)
+- E. Google OAuth 인증
+- F. 관리자 패널
+
+## 로컬 실행
 
 ```bash
 pnpm install
+# .env.local 설정 (아래 환경변수 참고)
 pnpm dev
 ```
 
-브라우저에서 [http://localhost:3000](http://localhost:3000)을 열면 확인할 수 있습니다.
+## 환경변수
 
-## 폴더 구조
+| 변수명 | 설명 |
+|---|---|
+| `MONGODB_URI` | MongoDB Atlas 연결 문자열 |
+| `NEXTAUTH_SECRET` | 세션 서명 키 |
+| `NEXTAUTH_URL` | 앱 URL (로컬: `http://localhost:3000`) |
+| `GOOGLE_CLIENT_ID` | Google OAuth Client ID |
+| `GOOGLE_CLIENT_SECRET` | Google OAuth Client Secret |
 
+## 시딩
+
+```bash
+MONGODB_URI="mongodb+srv://..." pnpm seed
 ```
-app/          # Next.js App Router 페이지
-components/   # UI 컴포넌트
-lib/          # 타입, 유틸리티, mock 데이터
-public/       # 정적 파일 (이미지, 아이콘, 폰트)
-```
 
-## 주요 화면
+## 배포
 
-| 경로 | 설명 |
-|------|------|
-| `/` | 홈 (Hero, 탐색 섹션) |
-| `/search` | 검색 및 필터 |
-| `/resources/[id]` | 자료 상세 |
-| `/my-loop` | 나의 학습 아카이브 |
+<https://loop-in-mu.vercel.app>

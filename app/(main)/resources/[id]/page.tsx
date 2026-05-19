@@ -4,6 +4,7 @@ import type { Metadata } from "next"
 import { mockResources } from "@/lib/mock/resources"
 import type { Resource } from "@/lib/types"
 import { SaveButton } from "@/components/loop/SaveButton"
+import { ReportButton } from "@/components/resource/ReportButton"
 
 // ── 상수 ──────────────────────────────────────────────────────────────────
 const TYPE_BADGE: Record<string, string> = {
@@ -173,6 +174,7 @@ export default async function ResourceDetailPage({
 
             {/* CTA 버튼 */}
             <div className="flex items-center gap-2 w-full sm:w-auto">
+              <ReportButton resourceId={resource.id} />
               <SaveButton resourceId={resource.id} />
               <a
                 href={resource.url}
