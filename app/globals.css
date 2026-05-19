@@ -1,0 +1,60 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --primary: #F96A84;
+  --primary-light: #FDE8EC;
+  --primary-dark: #E84D6A;
+  --radius: 0.625rem;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-light: var(--primary-light);
+  --color-primary-dark: var(--primary-dark);
+  --font-sans: var(--font-pretendard);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 6px);
+}
+
+body {
+  background: #ffffff;
+  color: #171717;
+  font-family: var(--font-pretendard), sans-serif;
+}
+
+/* 아이콘을 #667085 단색으로 강제 변환 */
+.icon-muted {
+  filter: brightness(0) saturate(100%) invert(44%) sepia(8%) saturate(836%) hue-rotate(184deg) brightness(93%) contrast(90%);
+}
+
+/* 아이콘을 #F96A84(primary) 단색으로 강제 변환 */
+.icon-primary {
+  filter: brightness(0) saturate(100%) invert(55%) sepia(60%) saturate(600%) hue-rotate(300deg) brightness(105%) contrast(95%);
+}
+
+/* 아이콘을 #3B82F6(blue-500) 단색으로 강제 변환 */
+.icon-blue {
+  filter: brightness(0) saturate(100%) invert(37%) sepia(93%) saturate(400%) hue-rotate(196deg) brightness(100%) contrast(97%);
+}
+
+/* 아이콘을 #22C55E(green-500) 단색으로 강제 변환 */
+.icon-green {
+  filter: brightness(0) saturate(100%) invert(63%) sepia(50%) saturate(450%) hue-rotate(95deg) brightness(95%) contrast(90%);
+}
+
+/* @deprecated — 신규 컴포넌트는 Tailwind 유틸 직접 사용: rounded-2xl shadow-sm border border-neutral-100 */
+.card {
+  border-radius: 1rem;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  border: 1px solid #f5f5f5;
+}

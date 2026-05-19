@@ -1,0 +1,273 @@
+import type { Resource } from '@/lib/types'
+
+export const mockResources: Resource[] = [
+  // ── ux-ui (r-001 ~ r-004) ──────────────────────────────────────────────
+  {
+    id: 'r-001',
+    title: 'UX 리서치 입문: 사용자 인터뷰 설계',
+    description:
+      '실무에서 바로 적용할 수 있는 사용자 인터뷰 설계 방법을 단계별로 정리했습니다.',
+    category: 'ux-ui',
+    level: 'beginner',
+    type: 'article',
+    tags: ['UX리서치', '인터뷰', '사용자조사'],
+    url: 'https://example.com/ux-research-intro',
+    savedCount: 124,
+    createdAt: '2026-05-12T09:00:00Z',
+  },
+  {
+    id: 'r-002',
+    title: 'UI 레퍼런스 수집 & 분류 방법론',
+    description:
+      '좋은 디자인을 빠르게 찾고 구조화하는 레퍼런스 수집 워크플로우를 소개합니다.',
+    category: 'ux-ui',
+    level: 'beginner',
+    type: 'article',
+    tags: ['레퍼런스', 'UI디자인', '무드보드', '리서치'],
+    url: 'https://example.com/ui-reference-method',
+    savedCount: 89,
+    createdAt: '2026-05-08T11:00:00Z',
+  },
+  {
+    id: 'r-003',
+    title: 'UX 케이스스터디 작성법: 구조와 스토리텔링',
+    description:
+      '포트폴리오에 넣을 케이스스터디를 어떻게 구성하고 서술할지 실전 예시와 함께 배웁니다.',
+    category: 'ux-ui',
+    level: 'intermediate',
+    type: 'article',
+    tags: ['케이스스터디', '포트폴리오', '스토리텔링', 'UX'],
+    url: 'https://example.com/ux-case-study',
+    savedCount: 312,
+    createdAt: '2026-05-01T08:30:00Z',
+  },
+  {
+    id: 'r-004',
+    title: '포트폴리오를 위한 UX Writing 가이드',
+    description:
+      '디자이너가 꼭 알아야 할 UX Writing 원칙과 포트폴리오 설명문 작성 팁을 다룹니다.',
+    category: 'ux-ui',
+    level: 'intermediate',
+    type: 'article',
+    tags: ['UXWriting', '마이크로카피', '포트폴리오'],
+    url: 'https://example.com/ux-writing-guide',
+    savedCount: 201,
+    createdAt: '2026-04-28T14:00:00Z',
+  },
+
+  // ── frontend (r-005 ~ r-008) ───────────────────────────────────────────
+  {
+    id: 'r-005',
+    title: 'HTML 기초부터 시맨틱 마크업까지',
+    description:
+      '웹의 뼈대를 이루는 HTML을 기초부터 시맨틱 태그 활용까지 체계적으로 학습합니다.',
+    category: 'frontend',
+    level: 'beginner',
+    type: 'lecture',
+    tags: ['HTML', '시맨틱', '웹기초'],
+    url: 'https://example.com/html-basics',
+    savedCount: 478,
+    createdAt: '2026-05-14T10:00:00Z',
+  },
+  {
+    id: 'r-006',
+    title: 'CSS Flexbox & Grid 완전 정복',
+    description:
+      '현대 레이아웃의 핵심인 Flexbox와 Grid를 실전 예제로 마스터합니다.',
+    category: 'frontend',
+    level: 'beginner',
+    type: 'lecture',
+    tags: ['CSS', 'Flexbox', 'Grid', '레이아웃'],
+    url: 'https://example.com/css-flex-grid',
+    savedCount: 391,
+    createdAt: '2026-05-10T09:00:00Z',
+  },
+  {
+    id: 'r-007',
+    title: 'JavaScript 핵심 개념 정리: 클로저·프로미스·이벤트루프',
+    description:
+      '면접과 실무에 자주 등장하는 자바스크립트 핵심 개념들을 명확하게 정리합니다.',
+    category: 'frontend',
+    level: 'intermediate',
+    type: 'docs',
+    tags: ['JavaScript', '클로저', '비동기', '프로미스'],
+    url: 'https://example.com/js-core-concepts',
+    savedCount: 503,
+    createdAt: '2026-05-05T15:00:00Z',
+  },
+  {
+    id: 'r-008',
+    title: 'React 입문: 컴포넌트 설계와 상태 관리',
+    description:
+      'React의 컴포넌트 모델과 useState·useEffect를 활용한 기본 상태 관리를 학습합니다.',
+    category: 'frontend',
+    level: 'beginner',
+    type: 'lecture',
+    tags: ['React', '컴포넌트', '상태관리', 'Hooks'],
+    url: 'https://example.com/react-intro',
+    savedCount: 445,
+    createdAt: '2026-04-30T11:00:00Z',
+  },
+
+  // ── ai-data (r-009 ~ r-012) ────────────────────────────────────────────
+  {
+    id: 'r-009',
+    title: '프롬프트 엔지니어링 기초: ChatGPT를 200% 활용하는 법',
+    description:
+      '명확한 결과물을 얻기 위한 프롬프트 작성 원칙과 실전 템플릿을 소개합니다.',
+    category: 'ai-data',
+    level: 'beginner',
+    type: 'article',
+    tags: ['프롬프트엔지니어링', 'ChatGPT', 'AI활용', 'LLM'],
+    url: 'https://example.com/prompt-engineering-basics',
+    savedCount: 487,
+    createdAt: '2026-05-15T08:00:00Z',
+  },
+  {
+    id: 'r-010',
+    title: 'Zapier로 반복 업무 자동화 시작하기',
+    description:
+      '코딩 없이 앱 간 연동을 설계하는 노코드 자동화 툴 Zapier 핵심 사용법을 다룹니다.',
+    category: 'ai-data',
+    level: 'beginner',
+    type: 'practice',
+    tags: ['자동화', 'Zapier', '노코드', '워크플로우'],
+    url: 'https://example.com/zapier-automation',
+    savedCount: 223,
+    createdAt: '2026-05-09T13:00:00Z',
+  },
+  {
+    id: 'r-011',
+    title: 'AI 워크플로우 설계 가이드: 실무 적용 패턴',
+    description:
+      'LLM API를 조합해 반복 작업을 자동화하는 워크플로우 설계 방법을 소개합니다.',
+    category: 'ai-data',
+    level: 'intermediate',
+    type: 'article',
+    tags: ['AI워크플로우', 'LLM', 'API', '자동화'],
+    url: 'https://example.com/ai-workflow-design',
+    savedCount: 174,
+    createdAt: '2026-05-03T10:00:00Z',
+  },
+  {
+    id: 'r-012',
+    title: '데이터 분석 입문: Python pandas 핵심 정리',
+    description:
+      '데이터 분석의 첫 걸음, pandas를 활용한 데이터 로딩·정제·집계 방법을 실습합니다.',
+    category: 'ai-data',
+    level: 'intermediate',
+    type: 'lecture',
+    tags: ['Python', 'pandas', '데이터분석', '데이터정제'],
+    url: 'https://example.com/python-pandas-intro',
+    savedCount: 316,
+    createdAt: '2026-04-25T09:00:00Z',
+  },
+
+  // ── productivity (r-013 ~ r-016) ──────────────────────────────────────
+  {
+    id: 'r-013',
+    title: 'Notion 업무 시스템 구축하기: 나만의 대시보드',
+    description:
+      '프로젝트 관리, 할 일 추적, 메모 시스템을 하나로 연결하는 Notion 셋업 방법을 안내합니다.',
+    category: 'productivity',
+    level: 'beginner',
+    type: 'article',
+    tags: ['Notion', '생산성', '업무관리', '대시보드'],
+    url: 'https://example.com/notion-workspace',
+    savedCount: 388,
+    createdAt: '2026-05-13T07:30:00Z',
+  },
+  {
+    id: 'r-014',
+    title: '생산성 앱 조합 전략: 툴 선택 가이드',
+    description:
+      '목적에 맞는 생산성 앱을 선택하고 조합하는 프레임워크와 실제 스택을 추천합니다.',
+    category: 'productivity',
+    level: 'beginner',
+    type: 'article',
+    tags: ['생산성앱', '툴스택', 'PKM', '업무효율'],
+    url: 'https://example.com/productivity-apps-guide',
+    savedCount: 156,
+    createdAt: '2026-05-07T12:00:00Z',
+  },
+  {
+    id: 'r-015',
+    title: '개인 PKM 시스템 설계: 제텔카스텐 방식',
+    description:
+      '지식을 연결하고 축적하는 제텔카스텐(Zettelkasten) 방법론을 디지털 환경에 적용합니다.',
+    category: 'productivity',
+    level: 'intermediate',
+    type: 'article',
+    tags: ['PKM', '제텔카스텐', '지식관리', 'Obsidian'],
+    url: 'https://example.com/pkm-zettelkasten',
+    savedCount: 241,
+    createdAt: '2026-04-29T16:00:00Z',
+  },
+  {
+    id: 'r-016',
+    title: '목표 관리 프레임워크: OKR 실전 적용',
+    description:
+      '개인과 팀 모두에 적용할 수 있는 OKR 설정법과 분기 회고 방법을 실전 예시로 설명합니다.',
+    category: 'productivity',
+    level: 'practical',
+    type: 'article',
+    tags: ['OKR', '목표관리', '회고', '성과관리'],
+    url: 'https://example.com/okr-practical',
+    savedCount: 198,
+    createdAt: '2026-04-22T10:00:00Z',
+  },
+
+  // ── design-tool (r-017 ~ r-020) ───────────────────────────────────────
+  {
+    id: 'r-017',
+    title: 'Figma Auto Layout 완전 가이드',
+    description:
+      'Auto Layout의 모든 옵션을 마스터하고 반응형 컴포넌트를 효율적으로 제작합니다.',
+    category: 'design-tool',
+    level: 'beginner',
+    type: 'lecture',
+    tags: ['Figma', 'AutoLayout', '컴포넌트', 'UI디자인'],
+    url: 'https://example.com/figma-auto-layout',
+    savedCount: 432,
+    createdAt: '2026-05-11T09:00:00Z',
+  },
+  {
+    id: 'r-018',
+    title: 'Design System 구축하기: 컴포넌트부터 토큰까지',
+    description:
+      '실무에서 사용하는 디자인 시스템을 Figma로 구축하는 전체 프로세스를 단계별로 안내합니다.',
+    category: 'design-tool',
+    level: 'intermediate',
+    type: 'docs',
+    tags: ['디자인시스템', 'DesignToken', 'Figma', '컴포넌트'],
+    url: 'https://example.com/design-system-guide',
+    savedCount: 367,
+    createdAt: '2026-05-06T14:00:00Z',
+  },
+  {
+    id: 'r-019',
+    title: 'Figma 플러그인 TOP 10: 생산성 두 배 올리기',
+    description:
+      '디자이너들이 실제로 가장 많이 쓰는 Figma 플러그인을 엄선해 사용법과 함께 소개합니다.',
+    category: 'design-tool',
+    level: 'beginner',
+    type: 'article',
+    tags: ['Figma', '플러그인', '디자인툴', '생산성'],
+    url: 'https://example.com/figma-plugins-top10',
+    savedCount: 289,
+    createdAt: '2026-04-27T11:00:00Z',
+  },
+  {
+    id: 'r-020',
+    title: '컴포넌트 설계와 디자인 토큰 시스템',
+    description:
+      '확장 가능한 컴포넌트 구조를 설계하고 디자인 토큰으로 일관성을 유지하는 방법을 설명합니다.',
+    category: 'design-tool',
+    level: 'intermediate',
+    type: 'docs',
+    tags: ['디자인토큰', '컴포넌트설계', 'DesignSystem', 'Figma'],
+    url: 'https://example.com/component-design-tokens',
+    savedCount: 178,
+    createdAt: '2026-04-20T09:00:00Z',
+  },
+]
