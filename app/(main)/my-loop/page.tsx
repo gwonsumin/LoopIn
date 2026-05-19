@@ -30,7 +30,7 @@ function SkeletonGrid() {
 
 function EmptyNoSaves() {
   return (
-    <div className="text-center py-24">
+    <div className="min-h-[400px] flex flex-col items-center justify-center text-center">
       <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-neutral-100 mb-5">
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-neutral-400" aria-hidden="true">
           <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
@@ -157,7 +157,7 @@ export default function MyLoopPage() {
     : mockResources.filter((r) => localIds.includes(r.id))
 
   return (
-    <div className="min-h-screen bg-neutral-50">
+    <div className="bg-neutral-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div className="mb-8">
           <h1 className="text-2xl font-bold text-neutral-900">My Loop</h1>
