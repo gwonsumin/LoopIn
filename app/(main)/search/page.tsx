@@ -211,7 +211,7 @@ function SearchContent() {
     (category ? 1 : 0) + (level ? 1 : 0) + types.length
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-16">
       {/* 헤더 */}
       <h1 className="text-xl font-bold text-neutral-900 mb-6">
         {q ? `"${q}" 검색 결과 ${total}개` : `전체 자료 ${total}개`}

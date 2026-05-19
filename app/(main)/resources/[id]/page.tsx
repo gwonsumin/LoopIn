@@ -166,12 +166,12 @@ export default async function ResourceDetailPage({
 
   return (
     <div className="min-h-screen bg-neutral-50">
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <div className="max-w-5xl mx-auto px-6 py-8">
 
-        {/* 뒤로가기 */}
+        {/* 브레드크럼 */}
         <Link
           href="/search"
-          className="inline-flex items-center gap-1.5 text-sm text-neutral-500 hover:text-neutral-800 mb-8 transition-colors"
+          className="inline-flex items-center gap-1.5 text-sm text-neutral-500 hover:text-neutral-800 transition-colors"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <path d="M15 18l-6-6 6-6" />
@@ -179,93 +179,120 @@ export default async function ResourceDetailPage({
           탐색으로 돌아가기
         </Link>
 
-        {/* 메인 카드 */}
-        <div className="bg-white rounded-2xl border border-neutral-100 shadow-sm p-8 mb-6">
+        {/* 2컬럼 그리드 */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-6">
 
-          {/* 배지 행 */}
-          <div className="flex items-center gap-2 mb-4">
-            <span
-              className={`inline-block px-2.5 py-1 rounded-full text-xs font-medium ${TYPE_BADGE[resource.type]}`}
-            >
-              {TYPE_LABEL[resource.type]}
-            </span>
-            <span
-              className={`inline-block px-2.5 py-1 rounded-full text-xs font-medium ${LEVEL_BADGE[resource.level]}`}
-            >
-              {LEVEL_LABEL[resource.level]}
-            </span>
-            <span className="text-xs text-neutral-400">
-              {CATEGORY_LABEL[resource.category]}
-            </span>
-          </div>
+          {/* 좌측 — 본문 */}
+          <div className="lg:col-span-2 space-y-6">
 
-          {/* 제목 */}
-          <h1 className="text-2xl font-bold text-neutral-900 leading-snug mb-3">
-            {resource.title}
-          </h1>
-
-          {/* 설명 */}
-          <p className="text-base text-neutral-600 leading-relaxed mb-6">
-            {resource.description}
-          </p>
-
-          {/* 태그 */}
-          <div className="flex flex-wrap gap-1.5 mb-8">
-            {resource.tags.map((tag) => (
-              <Link
-                key={tag}
-                href={`/search?q=${encodeURIComponent(tag)}`}
-                className="text-xs px-3 py-1 bg-neutral-50 text-neutral-500 rounded-full border border-neutral-100 hover:bg-primary/5 hover:text-primary hover:border-primary/20 transition-colors"
-              >
-                #{tag}
-              </Link>
-            ))}
-          </div>
-
-          {/* 구분선 */}
-          <div className="border-t border-neutral-100 pt-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            {/* 저장 수 */}
-            <div className="flex items-center gap-1.5 text-sm text-neutral-400">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" stroke="none" aria-hidden="true">
-                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
-              </svg>
-              <span>{resource.savedCount.toLocaleString()}명이 저장했어요</span>
+            {/* 배지 + 제목 */}
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-medium ${TYPE_BADGE[resource.type]}`}>
+                  {TYPE_LABEL[resource.type]}
+                </span>
+                <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-medium ${LEVEL_BADGE[resource.level]}`}>
+                  {LEVEL_LABEL[resource.level]}
+                </span>
+                <span className="text-xs text-neutral-400">
+                  {CATEGORY_LABEL[resource.category]}
+                </span>
+              </div>
+              <h1 className="text-2xl font-bold text-neutral-900 leading-snug">
+                {resource.title}
+              </h1>
             </div>
 
-            {/* CTA 버튼 */}
-            <div className="flex items-center gap-2 w-full sm:w-auto">
-              <ReportButton resourceId={resource.id} />
-              <SaveButton resourceId={resource.id} />
-              <a
-                href={resource.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-primary hover:bg-primary-dark text-white text-sm font-medium transition-colors duration-200"
-              >
-                자료 보러가기
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                  <polyline points="15 3 21 3 21 9" />
-                  <line x1="10" y1="14" x2="21" y2="3" />
-                </svg>
-              </a>
-            </div>
-          </div>
-        </div>
+            {/* 설명 */}
+            <p className="text-base text-neutral-600 leading-relaxed">
+              {resource.description}
+            </p>
 
-        {/* 관련 자료 */}
-        {related.length > 0 && (
-          <section>
-            <h2 className="text-base font-semibold text-neutral-800 mb-4">
-              같은 카테고리 자료
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              {related.map((r) => (
-                <RelatedCard key={r.id} resource={r} />
+            {/* 태그 */}
+            <div className="flex flex-wrap gap-1.5">
+              {resource.tags.map((tag) => (
+                <Link
+                  key={tag}
+                  href={`/search?q=${encodeURIComponent(tag)}`}
+                  className="text-xs px-3 py-1 bg-neutral-50 text-neutral-500 rounded-full border border-neutral-100 hover:bg-primary/5 hover:text-primary hover:border-primary/20 transition-colors"
+                >
+                  #{tag}
+                </Link>
               ))}
             </div>
-          </section>
-        )}
+
+            {/* 바로가기 버튼 */}
+            <a
+              href={resource.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-primary hover:bg-primary-dark text-white text-sm font-medium transition-colors duration-200"
+            >
+              자료 보러가기
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                <polyline points="15 3 21 3 21 9" />
+                <line x1="10" y1="14" x2="21" y2="3" />
+              </svg>
+            </a>
+
+            {/* 관련 자료 */}
+            {related.length > 0 && (
+              <section className="pt-2">
+                <h2 className="text-base font-semibold text-neutral-800 mb-4">
+                  같은 카테고리 자료
+                </h2>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  {related.map((r) => (
+                    <RelatedCard key={r.id} resource={r} />
+                  ))}
+                </div>
+              </section>
+            )}
+          </div>
+
+          {/* 우측 — 메타 + 액션 */}
+          <div className="lg:col-span-1">
+            <div className="sticky top-24 space-y-3">
+
+              {/* 메타 정보 카드 */}
+              <div className="bg-white rounded-2xl border border-neutral-100 shadow-sm p-5 space-y-3">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-neutral-400">카테고리</span>
+                  <span className="font-medium text-neutral-700">{CATEGORY_LABEL[resource.category]}</span>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-neutral-400">유형</span>
+                  <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${TYPE_BADGE[resource.type]}`}>
+                    {TYPE_LABEL[resource.type]}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-neutral-400">난이도</span>
+                  <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${LEVEL_BADGE[resource.level]}`}>
+                    {LEVEL_LABEL[resource.level]}
+                  </span>
+                </div>
+                <div className="border-t border-neutral-100 pt-3 flex items-center gap-1.5 text-sm text-neutral-400">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none" aria-hidden="true">
+                    <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+                  </svg>
+                  <span>{resource.savedCount.toLocaleString()}명이 저장했어요</span>
+                </div>
+              </div>
+
+              {/* SaveButton */}
+              <SaveButton resourceId={resource.id} className="w-full justify-center" />
+
+              {/* 신고 버튼 */}
+              <div className="flex justify-end">
+                <ReportButton resourceId={resource.id} />
+              </div>
+
+            </div>
+          </div>
+
+        </div>
       </div>
     </div>
   )

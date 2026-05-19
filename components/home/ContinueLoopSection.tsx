@@ -107,7 +107,7 @@ function NextResourceCard({
   return (
     <Link
       href={`/resources/${resource.id}`}
-      className="group block rounded-2xl border border-neutral-100 bg-white p-4 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+      className="group flex flex-col justify-between min-h-[120px] rounded-2xl border border-neutral-100 bg-white p-4 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
     >
       {/* 상단: 유형 뱃지 + 시간 */}
       <div className="flex items-center justify-between mb-3">
