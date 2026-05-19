@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { QueryProvider } from "@/components/providers/QueryProvider";
-import { Header } from "@/components/layout/Header";
-import { Footer } from "@/components/layout/Footer";
+import Providers from "./providers";
 
 const pretendard = localFont({
   src: "../public/fonts/PretendardVariable.woff2",
@@ -27,9 +26,9 @@ export default function RootLayout({
     <html lang="ko" className={`${pretendard.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col bg-white text-neutral-900">
         <QueryProvider>
-          <Header />
-          <main className="flex-1">{children}</main>
-          <Footer />
+          <Providers>
+            {children}
+          </Providers>
         </QueryProvider>
       </body>
     </html>

@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { X, Menu } from "lucide-react";
+import { X, Menu, ChevronDown } from "lucide-react";
+import { useSession, signOut } from "next-auth/react";
 import { getAllSaved } from "@/lib/utils/loop-storage";
 import {
   Sheet,
@@ -73,8 +74,10 @@ const NAV_ITEMS: NavItem[] = [
 // ── Header ─────────────────────────────────────────────────────────────────
 export function Header() {
   const pathname = usePathname();
+  const { data: session } = useSession();
   const [searchOpen, setSearchOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
   const [savedCount, setSavedCount] = useState(0);
 
   useEffect(() => {
@@ -167,12 +170,70 @@ export function Header() {
                 className="icon-muted"
               />
             </button>
-            <button
-              type="button"
-              className="border border-neutral-200 text-sm px-4 py-2 rounded-full hover:border-primary hover:text-primary transition-colors text-neutral-700"
-            >
-              로그인
-            </button>
+
+            {session?.user ? (
+              /* 로그인 상태: 프로필 드롭다운 */
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setProfileOpen((v) => !v)}
+                  onBlur={() => setTimeout(() => setProfileOpen(false), 150)}
+                  className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-neutral-100 transition-colors"
+                >
+                  {session.user.image ? (
+                    <Image
+                      src={session.user.image}
+                      alt={session.user.name ?? "프로필"}
+                      width={28}
+                      height={28}
+                      className="rounded-full object-cover"
+                      unoptimized
+                    />
+                  ) : (
+                    <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center text-primary text-xs font-bold">
+                      {session.user.name?.[0]?.toUpperCase() ?? "U"}
+                    </div>
+                  )}
+                  <ChevronDown className="h-3.5 w-3.5 text-neutral-400" />
+                </button>
+
+                {profileOpen && (
+                  <div className="absolute right-0 top-full mt-1 bg-white rounded-2xl shadow-lg border border-neutral-100 py-2 min-w-[160px] z-50">
+                    <Link
+                      href="/profile"
+                      onClick={() => setProfileOpen(false)}
+                      className="block px-4 py-2.5 text-sm text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 transition-colors"
+                    >
+                      마이페이지
+                    </Link>
+                    <Link
+                      href="/my-loop"
+                      onClick={() => setProfileOpen(false)}
+                      className="block px-4 py-2.5 text-sm text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 transition-colors"
+                    >
+                      My Loop
+                    </Link>
+                    <div className="border-t border-neutral-100 mt-1 pt-1">
+                      <button
+                        type="button"
+                        onClick={() => signOut({ callbackUrl: "/" })}
+                        className="w-full text-left px-4 py-2.5 text-sm text-neutral-500 hover:bg-neutral-50 hover:text-red-400 transition-colors"
+                      >
+                        로그아웃
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              /* 비로그인 상태 */
+              <Link
+                href="/login"
+                className="border border-neutral-200 text-sm px-4 py-2 rounded-full hover:border-primary hover:text-primary transition-colors text-neutral-700"
+              >
+                로그인
+              </Link>
+            )}
           </div>
 
           {/* 모바일 우측 */}
@@ -269,14 +330,54 @@ export function Header() {
                   ))}
                 </nav>
 
-                {/* 하단 로그인 */}
+                {/* 하단 프로필/로그인 */}
                 <div className="p-4 border-t border-neutral-100 shrink-0">
-                  <button
-                    type="button"
-                    className="w-full py-2.5 rounded-xl bg-primary hover:bg-primary-dark text-white text-sm font-medium transition-colors"
-                  >
-                    로그인
-                  </button>
+                  {session?.user ? (
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-3 px-1 py-1">
+                        {session.user.image ? (
+                          <Image
+                            src={session.user.image}
+                            alt={session.user.name ?? "프로필"}
+                            width={32}
+                            height={32}
+                            className="rounded-full object-cover"
+                            unoptimized
+                          />
+                        ) : (
+                          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-sm font-bold shrink-0">
+                            {session.user.name?.[0]?.toUpperCase() ?? "U"}
+                          </div>
+                        )}
+                        <div className="min-w-0">
+                          <p className="text-sm font-medium text-neutral-800 truncate">{session.user.name}</p>
+                          <p className="text-xs text-neutral-400 truncate">{session.user.email}</p>
+                        </div>
+                      </div>
+                      <Link
+                        href="/profile"
+                        onClick={() => setMobileOpen(false)}
+                        className="block text-center w-full py-2 rounded-xl border border-neutral-200 text-sm text-neutral-600 hover:bg-neutral-50 transition-colors"
+                      >
+                        마이페이지
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={() => signOut({ callbackUrl: "/" })}
+                        className="w-full py-2 rounded-xl border border-neutral-200 text-sm text-neutral-500 hover:border-red-200 hover:text-red-400 transition-colors"
+                      >
+                        로그아웃
+                      </button>
+                    </div>
+                  ) : (
+                    <Link
+                      href="/login"
+                      onClick={() => setMobileOpen(false)}
+                      className="block text-center w-full py-2.5 rounded-xl bg-primary hover:bg-primary-dark text-white text-sm font-medium transition-colors"
+                    >
+                      로그인
+                    </Link>
+                  )}
                 </div>
               </SheetContent>
             </Sheet>
