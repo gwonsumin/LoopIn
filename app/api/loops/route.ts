@@ -65,15 +65,18 @@ export async function POST(req: NextRequest) {
   await connectDB()
   const uploader = await getUploader(session.user.email)
 
-  const existing = await Loop.findOne({ userId: uploader._id, resourceId })
-  if (existing) {
-    return NextResponse.json({ error: '이미 저장된 자료입니다.' }, { status: 409 })
+  try {
+    await Loop.create({ userId: uploader._id, resourceId })
+  } catch (err: unknown) {
+    // 유니크 인덱스 충돌 (중복 저장)
+    if ((err as { code?: number }).code === 11000) {
+      return NextResponse.json({ error: '이미 저장된 자료입니다.' }, { status: 409 })
+    }
+    throw err
   }
 
-  await Promise.all([
-    Loop.create({ userId: uploader._id, resourceId }),
-    Resource.findByIdAndUpdate(resourceId, { $inc: { savedCount: 1 } }),
-  ])
+  // Loop 생성 성공 후에만 카운트 증가
+  await Resource.findByIdAndUpdate(resourceId, { $inc: { savedCount: 1 } })
 
   return NextResponse.json({ success: true }, { status: 201 })
 }

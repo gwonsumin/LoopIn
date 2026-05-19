@@ -5,6 +5,68 @@ import { mockResources } from "@/lib/mock/resources"
 import type { Resource } from "@/lib/types"
 import { SaveButton } from "@/components/loop/SaveButton"
 import { ReportButton } from "@/components/resource/ReportButton"
+import { connectDB } from "@/lib/mongodb"
+import { Resource as ResourceModel } from "@/lib/models/Resource"
+
+function isObjectId(id: string) {
+  return /^[0-9a-f]{24}$/i.test(id)
+}
+
+async function getResource(id: string): Promise<Resource | null> {
+  if (isObjectId(id)) {
+    try {
+      await connectDB()
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const doc = await ResourceModel.findById(id).lean() as any
+      if (doc) {
+        return {
+          id: String(doc._id),
+          title: doc.title,
+          description: doc.description,
+          category: doc.category,
+          level: doc.level,
+          type: doc.type,
+          tags: doc.tags,
+          thumbnail: doc.thumbnail,
+          url: doc.url,
+          savedCount: doc.savedCount,
+          createdAt: doc.createdAt instanceof Date ? doc.createdAt.toISOString() : String(doc.createdAt),
+        }
+      }
+    } catch {
+      // DB 연결 실패 시 mock으로 폴백
+    }
+  }
+  return mockResources.find((r) => r.id === id) ?? null
+}
+
+async function getRelated(resource: Resource): Promise<Resource[]> {
+  if (isObjectId(resource.id)) {
+    try {
+      await connectDB()
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const docs = await ResourceModel.find({ category: resource.category, _id: { $ne: resource.id } }).limit(3).lean() as any[]
+      return docs.map((doc: any) => ({
+        id: String(doc._id),
+        title: doc.title,
+        description: doc.description,
+        category: doc.category,
+        level: doc.level,
+        type: doc.type,
+        tags: doc.tags,
+        thumbnail: doc.thumbnail,
+        url: doc.url,
+        savedCount: doc.savedCount,
+        createdAt: doc.createdAt instanceof Date ? doc.createdAt.toISOString() : String(doc.createdAt),
+      }))
+    } catch {
+      // DB 실패 시 빈 배열
+    }
+  }
+  return mockResources
+    .filter((r) => r.category === resource.category && r.id !== resource.id)
+    .slice(0, 3)
+}
 
 // ── 상수 ──────────────────────────────────────────────────────────────────
 const TYPE_BADGE: Record<string, string> = {
@@ -48,7 +110,7 @@ export async function generateMetadata({
   params: Promise<{ id: string }>
 }): Promise<Metadata> {
   const { id } = await params
-  const resource = mockResources.find((r) => r.id === id)
+  const resource = await getResource(id)
   if (!resource) return {}
   return {
     title: `${resource.title} — LoopIn`,
@@ -56,6 +118,7 @@ export async function generateMetadata({
   }
 }
 
+// mock IDs만 정적 생성, DB IDs는 동적 처리 (dynamicParams 기본값 true)
 export function generateStaticParams() {
   return mockResources.map((r) => ({ id: r.id }))
 }
@@ -96,13 +159,10 @@ export default async function ResourceDetailPage({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
-  const resource = mockResources.find((r) => r.id === id)
+  const resource = await getResource(id)
   if (!resource) notFound()
 
-  // 관련 자료: 같은 카테고리 중 현재 자료 제외, 최대 3개
-  const related = mockResources
-    .filter((r) => r.category === resource.category && r.id !== resource.id)
-    .slice(0, 3)
+  const related = await getRelated(resource)
 
   return (
     <div className="min-h-screen bg-neutral-50">
