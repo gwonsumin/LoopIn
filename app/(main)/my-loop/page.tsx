@@ -2,9 +2,12 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
+import { useSession } from "next-auth/react"
+import { useQuery } from "@tanstack/react-query"
 import { getAllSaved } from "@/lib/utils/loop-storage"
 import { mockResources } from "@/lib/mock/resources"
 import { ResourceCard } from "@/components/search/ResourceCard"
+import type { Resource } from "@/lib/types"
 
 const CATEGORY_TABS = [
   { label: "전체", value: "all" },
@@ -60,94 +63,112 @@ function EmptyFiltered({ onReset }: { onReset: () => void }) {
   )
 }
 
-export default function MyLoopPage() {
-  const [mounted, setMounted] = useState(false)
-  const [savedIds, setSavedIds] = useState<string[]>([])
+function ResourceGrid({
+  resources,
+  isLoading,
+}: {
+  resources: Resource[]
+  isLoading: boolean
+}) {
   const [activeCategory, setActiveCategory] = useState("all")
 
-  useEffect(() => {
-    setSavedIds(getAllSaved())
-    setMounted(true)
+  const filtered =
+    activeCategory === "all"
+      ? resources
+      : resources.filter((r) => r.category === activeCategory)
 
-    function onUpdate() {
-      setSavedIds(getAllSaved())
-    }
+  if (isLoading) return <SkeletonGrid />
+  if (resources.length === 0) return <EmptyNoSaves />
+
+  return (
+    <>
+      {/* 카테고리 탭 */}
+      <div className="flex gap-2 overflow-x-auto pb-1 mb-6 scrollbar-none">
+        {CATEGORY_TABS.map((tab) => {
+          const count =
+            tab.value === "all"
+              ? resources.length
+              : resources.filter((r) => r.category === tab.value).length
+          if (tab.value !== "all" && count === 0) return null
+          return (
+            <button
+              key={tab.value}
+              type="button"
+              onClick={() => setActiveCategory(tab.value)}
+              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                activeCategory === tab.value
+                  ? "bg-primary text-white"
+                  : "bg-white border border-neutral-200 text-neutral-600 hover:border-primary/40 hover:text-primary"
+              }`}
+            >
+              {tab.label}
+              {count > 0 && (
+                <span
+                  className={`ml-1.5 text-xs ${
+                    activeCategory === tab.value ? "opacity-80" : "text-neutral-400"
+                  }`}
+                >
+                  {count}
+                </span>
+              )}
+            </button>
+          )
+        })}
+      </div>
+
+      {filtered.length === 0 ? (
+        <EmptyFiltered onReset={() => setActiveCategory("all")} />
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filtered.map((r) => (
+            <ResourceCard key={r.id} resource={r} />
+          ))}
+        </div>
+      )}
+    </>
+  )
+}
+
+export default function MyLoopPage() {
+  const { data: session, status } = useSession()
+  const [mounted, setMounted] = useState(false)
+  const [localIds, setLocalIds] = useState<string[]>([])
+
+  useEffect(() => {
+    setLocalIds(getAllSaved())
+    setMounted(true)
+    function onUpdate() { setLocalIds(getAllSaved()) }
     window.addEventListener("loopin-loop-updated", onUpdate)
     return () => window.removeEventListener("loopin-loop-updated", onUpdate)
   }, [])
 
-  const savedResources = mockResources.filter((r) => savedIds.includes(r.id))
+  // 로그인 상태: API
+  const { data: apiData, isLoading: apiLoading } = useQuery({
+    queryKey: ["loops"],
+    queryFn: () => fetch("/api/loops").then((r) => r.json()) as Promise<{ data: Resource[] }>,
+    enabled: status === "authenticated",
+    staleTime: 30_000,
+  })
 
-  const filtered =
-    activeCategory === "all"
-      ? savedResources
-      : savedResources.filter((r) => r.category === activeCategory)
+  const isLoggedIn = status === "authenticated"
+  const isLoading = isLoggedIn ? apiLoading : !mounted
+  const resources: Resource[] = isLoggedIn
+    ? (apiData?.data ?? [])
+    : mockResources.filter((r) => localIds.includes(r.id))
 
   return (
     <div className="min-h-screen bg-neutral-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        {/* 헤더 */}
         <div className="mb-8">
           <h1 className="text-2xl font-bold text-neutral-900">My Loop</h1>
-          {mounted && savedResources.length > 0 && (
+          {!isLoading && resources.length > 0 && (
             <p className="text-sm text-neutral-500 mt-1">
-              {savedResources.length}개의 자료를 저장했어요
+              {resources.length}개의 자료를 저장했어요
             </p>
           )}
         </div>
 
-        {!mounted ? (
-          <SkeletonGrid />
-        ) : savedResources.length === 0 ? (
-          <EmptyNoSaves />
-        ) : (
-          <>
-            {/* 카테고리 탭 */}
-            <div className="flex gap-2 flex-wrap mb-6">
-              {CATEGORY_TABS.map((tab) => {
-                const count =
-                  tab.value === "all"
-                    ? savedResources.length
-                    : savedResources.filter((r) => r.category === tab.value).length
-                if (tab.value !== "all" && count === 0) return null
-                return (
-                  <button
-                    key={tab.value}
-                    type="button"
-                    onClick={() => setActiveCategory(tab.value)}
-                    className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                      activeCategory === tab.value
-                        ? "bg-primary text-white"
-                        : "bg-white border border-neutral-200 text-neutral-600 hover:border-primary/40 hover:text-primary"
-                    }`}
-                  >
-                    {tab.label}
-                    {count > 0 && (
-                      <span
-                        className={`ml-1.5 text-xs ${
-                          activeCategory === tab.value ? "opacity-80" : "text-neutral-400"
-                        }`}
-                      >
-                        {count}
-                      </span>
-                    )}
-                  </button>
-                )
-              })}
-            </div>
-
-            {/* 그리드 or 빈 상태 */}
-            {filtered.length === 0 ? (
-              <EmptyFiltered onReset={() => setActiveCategory("all")} />
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filtered.map((r) => (
-                  <ResourceCard key={r.id} resource={r} />
-                ))}
-              </div>
-            )}
-          </>
-        )}
+        <ResourceGrid resources={resources} isLoading={isLoading} />
       </div>
     </div>
   )
