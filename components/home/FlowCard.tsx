@@ -78,6 +78,7 @@ export default function FlowCard({ flow }: Props) {
               src={flow.image}
               alt={flow.title}
               fill
+              unoptimized
               sizes="(max-width: 768px) 100vw, 456px"
               className="object-contain p-4"
             />
