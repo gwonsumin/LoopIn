@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useSession } from "next-auth/react"
 import { isSaved, toggleSaved } from "@/lib/utils/loop-storage"
 
 interface SaveButtonProps {
@@ -8,24 +9,54 @@ interface SaveButtonProps {
   className?: string
 }
 
+function isObjectId(id: string) {
+  return /^[0-9a-f]{24}$/i.test(id)
+}
+
 export function SaveButton({ resourceId, className = "" }: SaveButtonProps) {
+  const { data: session } = useSession()
   const [saved, setSaved] = useState(false)
   const [mounted, setMounted] = useState(false)
+  const [loading, setLoading] = useState(false)
 
-  // hydration 방지: 클라이언트에서만 localStorage 읽기
+  const useApi = !!session?.user && isObjectId(resourceId)
+
   useEffect(() => {
-    setSaved(isSaved(resourceId))
-    setMounted(true)
-  }, [resourceId])
+    if (!mounted) setMounted(true)
+    if (!useApi) {
+      setSaved(isSaved(resourceId))
+    }
+  }, [resourceId, mounted, useApi])
 
-  function handleToggle() {
-    const next = toggleSaved(resourceId)
-    setSaved(next)
-    window.dispatchEvent(new CustomEvent("loopin-loop-updated"))
+  async function handleToggle() {
+    if (loading) return
+    setLoading(true)
+
+    try {
+      if (useApi) {
+        if (saved) {
+          await fetch(`/api/loops?resourceId=${resourceId}`, { method: "DELETE" })
+          setSaved(false)
+        } else {
+          const res = await fetch("/api/loops", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ resourceId }),
+          })
+          if (res.ok || res.status === 409) setSaved(true)
+        }
+        window.dispatchEvent(new CustomEvent("loopin-loop-updated"))
+      } else {
+        const next = toggleSaved(resourceId)
+        setSaved(next)
+        window.dispatchEvent(new CustomEvent("loopin-loop-updated"))
+      }
+    } finally {
+      setLoading(false)
+    }
   }
 
   if (!mounted) {
-    // 서버 렌더 시 placeholder — 레이아웃 shift 방지
     return (
       <button
         type="button"
@@ -44,8 +75,9 @@ export function SaveButton({ resourceId, className = "" }: SaveButtonProps) {
     <button
       type="button"
       onClick={handleToggle}
+      disabled={loading}
       aria-pressed={saved}
-      className={`flex items-center gap-2 px-5 py-2.5 rounded-xl border text-sm font-medium transition-all duration-200 ${
+      className={`flex items-center gap-2 px-5 py-2.5 rounded-xl border text-sm font-medium transition-all duration-200 disabled:opacity-60 ${
         saved
           ? "border-primary bg-primary/5 text-primary"
           : "border-neutral-200 bg-white text-neutral-700 hover:border-primary/40 hover:text-primary"
