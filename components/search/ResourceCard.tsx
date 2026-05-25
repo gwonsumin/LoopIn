@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { Bookmark } from "lucide-react"
 import type { Resource } from "@/lib/types"
+import { ProgressBadge } from "./ProgressBadge"
 
 const TYPE_BADGE: Record<string, string> = {
   article:  "bg-blue-50 text-blue-700",
@@ -42,13 +43,16 @@ export function ResourceCard({ resource }: { resource: Resource }) {
       href={`/resources/${resource.id}`}
       className="group flex flex-col rounded-2xl border border-neutral-100 bg-white p-5 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200"
     >
-      {/* 상단: 유형 배지 + 저장 수 */}
+      {/* 상단: 유형 배지 + 진행 뱃지 + 저장 수 */}
       <div className="flex items-center justify-between mb-3">
-        <span
-          className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${TYPE_BADGE[resource.type]}`}
-        >
-          {TYPE_LABEL[resource.type]}
-        </span>
+        <div className="flex items-center gap-1.5">
+          <span
+            className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${TYPE_BADGE[resource.type]}`}
+          >
+            {TYPE_LABEL[resource.type]}
+          </span>
+          <ProgressBadge resourceId={resource.id} />
+        </div>
         <span className="flex items-center gap-1 text-xs text-neutral-400">
           <Bookmark className="h-3 w-3" />
           {resource.savedCount.toLocaleString()}

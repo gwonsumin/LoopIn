@@ -9,7 +9,7 @@ interface Props {
 export default function LearningFlowsSection({ flows }: Props) {
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-      <div className="bg-white rounded-3xl px-8 py-12 shadow-sm border border-neutral-100">
+      <div className="bg-white rounded-3xl px-5 py-8 sm:px-8 sm:py-12 shadow-sm border border-neutral-100">
 
         {/* 섹션 헤더 */}
         <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-8">

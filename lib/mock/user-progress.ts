@@ -1,4 +1,4 @@
-import type { UserProgress } from '@/lib/types'
+import type { UserProgress, ContinueLoopProgress } from '@/lib/types'
 import { mockFlows } from '@/lib/mock/flows'
 import { mockResources } from '@/lib/mock/resources'
 
@@ -22,26 +22,6 @@ const pendingStepResourceIds = currentFlow.steps
 export const recommendedResources = pendingStepResourceIds
   .map((id) => mockResources.find((r) => r.id === id))
   .filter((r): r is NonNullable<typeof r> => r !== undefined)
-
-// ── STEP 01-C: ContinueLoopSection 전용 ────────────────────────────────────
-export interface ContinueLoopProgress {
-  currentFlow: {
-    id: string
-    title: string
-    category: 'ux-ui' | 'frontend' | 'ai-data' | 'productivity'
-    totalResources: number
-  }
-  progressPercent: number
-  completedResourceIds: string[]
-  nextResources: Array<{
-    id: string
-    title: string
-    type: 'lecture' | 'article' | 'docs' | 'practice' | 'video'
-    level: 'beginner' | 'intermediate' | 'advanced' | 'practical'
-    estimatedMinutes: number
-  }>
-  lastAccessedAt: string
-}
 
 export const mockUserProgress: ContinueLoopProgress = {
   currentFlow: {

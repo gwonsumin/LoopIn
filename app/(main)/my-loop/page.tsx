@@ -1,11 +1,9 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import Link from "next/link"
 import { useSession } from "next-auth/react"
 import { useQuery } from "@tanstack/react-query"
-import { getAllSaved } from "@/lib/utils/loop-storage"
-import { mockResources } from "@/lib/mock/resources"
 import { ResourceCard } from "@/components/search/ResourceCard"
 import type { Resource } from "@/lib/types"
 
@@ -28,16 +26,62 @@ function SkeletonGrid() {
   )
 }
 
+function LoginPrompt() {
+  return (
+    <div className="min-h-[400px] flex flex-col items-center justify-center text-center">
+      <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 mb-5">
+        <svg
+          width="28"
+          height="28"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="#F96A84"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+          <circle cx="12" cy="7" r="4" />
+        </svg>
+      </div>
+      <p className="text-neutral-800 font-semibold mb-2">로그인이 필요해요</p>
+      <p className="text-sm text-neutral-400 mb-6">
+        로그인하면 어디서든 내 Loop를 이어볼 수 있어요
+      </p>
+      <Link
+        href="/login"
+        className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-primary hover:bg-primary-dark text-white text-sm font-medium transition-colors"
+      >
+        로그인하기
+      </Link>
+    </div>
+  )
+}
+
 function EmptyNoSaves() {
   return (
     <div className="min-h-[400px] flex flex-col items-center justify-center text-center">
       <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-neutral-100 mb-5">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-neutral-400" aria-hidden="true">
+        <svg
+          width="28"
+          height="28"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="text-neutral-400"
+          aria-hidden="true"
+        >
           <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
         </svg>
       </div>
-      <p className="text-neutral-500 font-medium mb-1">아직 저장된 자료가 없어요</p>
-      <p className="text-sm text-neutral-400 mb-6">마음에 드는 자료를 저장하고 나만의 루프를 만들어보세요</p>
+      <p className="text-neutral-500 font-medium mb-1">아직 저장한 자료가 없어요</p>
+      <p className="text-sm text-neutral-400 mb-6">
+        마음에 드는 자료를 저장하고 나만의 루프를 만들어보세요
+      </p>
       <Link
         href="/search"
         className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-primary hover:bg-primary-dark text-white text-sm font-medium transition-colors"
@@ -63,13 +107,7 @@ function EmptyFiltered({ onReset }: { onReset: () => void }) {
   )
 }
 
-function ResourceGrid({
-  resources,
-  isLoading,
-}: {
-  resources: Resource[]
-  isLoading: boolean
-}) {
+function ResourceGrid({ resources }: { resources: Resource[] }) {
   const [activeCategory, setActiveCategory] = useState("all")
 
   const filtered =
@@ -77,12 +115,10 @@ function ResourceGrid({
       ? resources
       : resources.filter((r) => r.category === activeCategory)
 
-  if (isLoading) return <SkeletonGrid />
   if (resources.length === 0) return <EmptyNoSaves />
 
   return (
     <>
-      {/* 카테고리 탭 */}
       <div className="flex gap-2 overflow-x-auto pb-1 mb-6 scrollbar-none">
         {CATEGORY_TABS.map((tab) => {
           const count =
@@ -130,45 +166,38 @@ function ResourceGrid({
 }
 
 export default function MyLoopPage() {
-  const { data: session, status } = useSession()
-  const [mounted, setMounted] = useState(false)
-  const [localIds, setLocalIds] = useState<string[]>([])
+  const { status } = useSession()
 
-  useEffect(() => {
-    setLocalIds(getAllSaved())
-    setMounted(true)
-    function onUpdate() { setLocalIds(getAllSaved()) }
-    window.addEventListener("loopin-loop-updated", onUpdate)
-    return () => window.removeEventListener("loopin-loop-updated", onUpdate)
-  }, [])
-
-  // 로그인 상태: API
   const { data: apiData, isLoading: apiLoading } = useQuery({
     queryKey: ["loops"],
-    queryFn: () => fetch("/api/loops").then((r) => r.json()) as Promise<{ data: Resource[] }>,
+    queryFn: () =>
+      fetch("/api/loops").then((r) => r.json()) as Promise<{ data: Resource[] }>,
     enabled: status === "authenticated",
     staleTime: 30_000,
   })
 
-  const isLoggedIn = status === "authenticated"
-  const isLoading = isLoggedIn ? apiLoading : !mounted
-  const resources: Resource[] = isLoggedIn
-    ? (apiData?.data ?? [])
-    : mockResources.filter((r) => localIds.includes(r.id))
+  const resources = apiData?.data ?? []
+  const isLoading = status === "loading" || (status === "authenticated" && apiLoading)
 
   return (
     <div className="bg-neutral-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div className="mb-8">
           <h1 className="text-2xl font-bold text-neutral-900">My Loop</h1>
-          {!isLoading && resources.length > 0 && (
+          {status === "authenticated" && !isLoading && resources.length > 0 && (
             <p className="text-sm text-neutral-500 mt-1">
               {resources.length}개의 자료를 저장했어요
             </p>
           )}
         </div>
 
-        <ResourceGrid resources={resources} isLoading={isLoading} />
+        {isLoading ? (
+          <SkeletonGrid />
+        ) : status === "unauthenticated" ? (
+          <LoginPrompt />
+        ) : (
+          <ResourceGrid resources={resources} />
+        )}
       </div>
     </div>
   )

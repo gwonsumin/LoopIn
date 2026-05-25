@@ -150,7 +150,7 @@ export function HeroSection() {
             onClick={() => setActiveIndex(i)}
             aria-label={`${i + 1}번째 슬라이드로 이동`}
             aria-current={i === activeIndex}
-            className="w-8 h-8 flex items-center justify-center"
+            className="w-11 h-11 flex items-center justify-center"
           >
             <span
               className={cn(

@@ -83,3 +83,22 @@ export interface UserProgress {
   currentStepOrder: number
   progressPercent: number // 0-100
 }
+
+export interface ContinueLoopProgress {
+  currentFlow: {
+    id: string
+    title: string
+    category: 'ux-ui' | 'frontend' | 'ai-data' | 'productivity'
+    totalResources: number
+  }
+  progressPercent: number
+  completedResourceIds: string[]
+  nextResources: Array<{
+    id: string
+    title: string
+    type: 'lecture' | 'article' | 'docs' | 'practice' | 'video'
+    level: 'beginner' | 'intermediate' | 'advanced' | 'practical'
+    estimatedMinutes: number
+  }>
+  lastAccessedAt: string
+}
