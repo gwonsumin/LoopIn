@@ -105,6 +105,8 @@ export default function SearchOverlay({ isOpen, onClose }: Props) {
             <img src="/icons/header-search.svg" alt="" width={20} height={20} className="icon-muted shrink-0" />
             <input
               ref={inputRef}
+              id="search-query"
+              name="q"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               onKeyDown={(e) => { if (e.key === "Enter") handleSearch() }}

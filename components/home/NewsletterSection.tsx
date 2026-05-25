@@ -51,6 +51,8 @@ export default function NewsletterSection() {
             <form onSubmit={handleSubmit} noValidate className="mt-6">
               <div className="flex gap-2">
                 <input
+                  id="newsletter-email"
+                  name="email"
                   type="email"
                   value={email}
                   onChange={(e) => {
