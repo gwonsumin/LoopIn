@@ -151,6 +151,7 @@ export default function ResourceNewPage() {
             </div>
             <Input
               {...register("title")}
+              id="title"
               placeholder="자료 제목을 입력하세요"
               className="h-10 w-full rounded-xl border-neutral-200 px-3 text-sm"
             />
@@ -167,6 +168,7 @@ export default function ResourceNewPage() {
             </div>
             <Textarea
               {...register("description")}
+              id="description"
               rows={4}
               placeholder="어떤 내용을 다루는 자료인지 간단히 설명해주세요"
               className="w-full rounded-xl border-neutral-200 px-3 py-2.5 text-sm resize-none"
@@ -182,6 +184,7 @@ export default function ResourceNewPage() {
             <div className="flex gap-2">
               <Input
                 {...register("url")}
+                id="url"
                 placeholder="https://"
                 className="flex-1 h-10 rounded-xl border-neutral-200 px-3 text-sm"
               />
@@ -314,6 +317,8 @@ export default function ResourceNewPage() {
               ))}
               {tags.length < 5 && (
                 <input
+                  id="tag-input"
+                  name="tag-input"
                   value={tagInput}
                   onChange={(e) => setTagInput(e.target.value)}
                   onKeyDown={handleTagKeyDown}
