@@ -1,5 +1,6 @@
 import Link from "next/link"
 import Image from "next/image"
+import { ArrowRight } from "lucide-react"
 import { cn } from "@/lib/utils"
 import type { Category } from "@/lib/types"
 
@@ -28,14 +29,11 @@ export default function ExploreSection({ categories }: Props) {
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       {/* 섹션 헤더 */}
       <div className="mb-8 space-y-2">
-        <span className="inline-block px-3 py-1 rounded-full bg-[#F96A84]/10 text-[#F96A84] text-xs font-medium">
-          관심사로 탐색
-        </span>
         <h2 className="text-2xl font-bold text-neutral-900">
-          어떤 분야를 배우고 싶으신가요?
+          Explore by Interest
         </h2>
         <p className="text-sm text-neutral-500">
-          관심 분야를 선택하면 맞춤 자료를 탐색할 수 있어요
+          관심 분야를 선택하면, 연결된 학습 자료를 탐색해보세요.
         </p>
       </div>
 
@@ -75,9 +73,14 @@ export default function ExploreSection({ categories }: Props) {
               </p>
 
               {/* 자료 수 */}
-              <p className="text-xs text-neutral-400 mt-1">
-                {cat.resourceCount.toLocaleString()}개
+              <p className="text-xs font-medium text-neutral-500 mt-1">
+                {cat.resourceCount.toLocaleString()}개 자료
               </p>
+
+              {/* 화살표 */}
+              <div className="flex justify-center mt-3">
+                <ArrowRight className="w-3.5 h-3.5 text-neutral-400 group-hover:text-[#F96A84] transition-colors" />
+              </div>
             </Link>
           )
         })}

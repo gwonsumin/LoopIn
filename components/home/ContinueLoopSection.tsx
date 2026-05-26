@@ -1,15 +1,18 @@
+"use client"
+
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 import { cn } from "@/lib/utils"
 import type { Resource } from "@/lib/types"
 
-const TYPE_BADGE: Record<string, string> = {
-  article: "bg-blue-50 text-blue-700",
-  video: "bg-purple-50 text-purple-700",
-  docs: "bg-green-50 text-green-700",
-  lecture: "bg-pink-50 text-pink-700",
-  practice: "bg-orange-50 text-orange-700",
+const MOCK_PROGRESS = {
+  flowTitle: "UX Portfolio Flow",
+  description: "실무에서 필요로 하는 포트폴리오를 단계적으로 완성해보세요.",
+  percent: 65,
+  steps: ["리서치", "케이스스터디", "UX Writing", "프로토타이핑", "포트폴리오 구성"],
+  currentStep: 2,
 }
+
 const TYPE_LABEL: Record<string, string> = {
   article: "아티클",
   video: "영상",
@@ -17,55 +20,126 @@ const TYPE_LABEL: Record<string, string> = {
   lecture: "강의",
   practice: "실습",
 }
-const LEVEL_BADGE: Record<string, string> = {
-  beginner: "bg-emerald-50 text-emerald-700",
-  intermediate: "bg-yellow-50 text-yellow-700",
-  advanced: "bg-red-50 text-red-700",
-  practical: "bg-neutral-100 text-neutral-600",
-}
-const LEVEL_LABEL: Record<string, string> = {
-  beginner: "입문",
-  intermediate: "중급",
-  advanced: "고급",
-  practical: "실전",
+
+const DURATION_BY_TYPE: Record<string, string> = {
+  article: "15분",
+  video: "22분",
+  docs: "10분",
+  lecture: "30분",
+  practice: "25분",
 }
 
-function SavedResourceCard({ resource }: { resource: Resource }) {
+// SVG donut chart — no external library
+function DonutChart({ percent }: { percent: number }) {
+  const size = 140
+  const strokeWidth = 12
+  const r = (size - strokeWidth) / 2
+  const circumference = 2 * Math.PI * r
+  const offset = circumference * (1 - percent / 100)
+
   return (
-    <Link
-      href={`/resources/${resource.id}`}
-      className="group flex flex-col justify-between min-h-[120px] rounded-2xl border border-neutral-100 bg-white p-4 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
-    >
-      <div className="flex items-center gap-2 mb-3">
-        <span
-          className={cn(
-            "inline-block px-2 py-0.5 rounded-full text-xs font-medium",
-            TYPE_BADGE[resource.type]
-          )}
-        >
-          {TYPE_LABEL[resource.type]}
-        </span>
-        <span
-          className={cn(
-            "inline-block px-2 py-0.5 rounded-full text-xs font-medium",
-            LEVEL_BADGE[resource.level]
-          )}
-        >
-          {LEVEL_LABEL[resource.level]}
-        </span>
+    <div className="relative flex items-center justify-center">
+      <svg width={size} height={size} className="-rotate-90">
+        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#F3F4F6" strokeWidth={strokeWidth} />
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={r}
+          fill="none"
+          stroke="#F96A84"
+          strokeWidth={strokeWidth}
+          strokeLinecap="round"
+          strokeDasharray={circumference}
+          strokeDashoffset={offset}
+          style={{ transition: "stroke-dashoffset 0.6s ease" }}
+        />
+      </svg>
+      <div className="absolute inset-0 flex flex-col items-center justify-center">
+        <span className="text-2xl font-bold text-neutral-900">{percent}%</span>
+        <span className="text-xs text-[#F96A84] font-medium mt-0.5">진행중</span>
+      </div>
+    </div>
+  )
+}
+
+function StepProgress({ steps, currentStep }: { steps: string[]; currentStep: number }) {
+  return (
+    <div className="flex items-start gap-1 flex-wrap">
+      {steps.map((step, i) => {
+        const isDone = i < currentStep
+        const isCurrent = i === currentStep
+        return (
+          <div key={step} className="flex items-center gap-1">
+            <div className="flex flex-col items-center gap-1">
+              {isDone ? (
+                <div className="w-8 h-8 rounded-full bg-[#F96A84] flex items-center justify-center shrink-0">
+                  <svg width="13" height="10" viewBox="0 0 13 10" fill="none">
+                    <path d="M1 5L4.5 8.5L11.5 1.5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </div>
+              ) : isCurrent ? (
+                <div className="w-8 h-8 rounded-full border-2 border-[#F96A84] text-[#F96A84] flex items-center justify-center font-bold text-sm shrink-0">
+                  {i + 1}
+                </div>
+              ) : (
+                <div className="w-8 h-8 rounded-full border border-neutral-200 text-neutral-300 flex items-center justify-center text-sm shrink-0">
+                  {i + 1}
+                </div>
+              )}
+              <span className={cn("text-[10px] text-center whitespace-nowrap", isCurrent ? "font-bold text-neutral-800" : "text-neutral-400")}>
+                {step}
+              </span>
+            </div>
+            {i < steps.length - 1 && (
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none" className="mb-5 shrink-0 opacity-30">
+                <path d="M3 2L7 5L3 8" stroke="#9CA3AF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            )}
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+function NextResourceRow({ resource, index }: { resource: Resource; index: number }) {
+  const thumbSrc = resource.thumbnail ?? `/images/resource-thumb-0${index + 1}.png`
+  const duration = DURATION_BY_TYPE[resource.type] ?? "15분"
+
+  return (
+    <div className="flex items-center gap-3 py-3 border-b border-neutral-100 last:border-b-0">
+      {/* Thumbnail */}
+      <div className="shrink-0 w-16 h-11 rounded-lg overflow-hidden bg-neutral-100">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={thumbSrc} alt="" className="w-full h-full object-cover" />
       </div>
 
-      <p className="text-sm font-semibold text-neutral-800 line-clamp-2 mb-4 leading-snug group-hover:text-primary transition-colors">
-        {resource.title}
-      </p>
-
-      <div className="flex justify-end">
-        <span className="flex items-center gap-0.5 text-xs font-medium text-[#F96A84] group-hover:gap-1.5 transition-all">
-          바로가기
-          <ArrowRight className="h-3 w-3" />
-        </span>
+      {/* Title + meta */}
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-medium text-neutral-800 line-clamp-1 leading-snug">
+          {resource.title}
+        </p>
+        <p className="text-xs text-neutral-400 mt-0.5">
+          {TYPE_LABEL[resource.type]} · {duration}
+        </p>
       </div>
-    </Link>
+
+      {/* Action buttons */}
+      <div className="flex items-center gap-1.5 shrink-0">
+        <button
+          type="button"
+          className="px-3 py-1.5 rounded-full border border-neutral-200 text-xs font-medium text-neutral-600 hover:border-neutral-300 hover:bg-neutral-50 transition-colors whitespace-nowrap"
+        >
+          처음부터
+        </button>
+        <button
+          type="button"
+          className="px-3 py-1.5 rounded-full bg-[#F96A84] text-xs font-medium text-white hover:bg-[#e85a74] transition-colors whitespace-nowrap"
+        >
+          이어보기
+        </button>
+      </div>
+    </div>
   )
 }
 
@@ -76,32 +150,62 @@ interface Props {
 export default function ContinueLoopSection({ resources }: Props) {
   if (resources.length === 0) return null
 
+  const { flowTitle, description, percent, steps, currentStep } = MOCK_PROGRESS
+  const nextResources = resources.slice(0, 3)
+
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-      <div className="bg-neutral-50/60 rounded-3xl px-6 py-8 md:px-8 md:py-10">
+      {/* Section header */}
+      <div className="flex items-end justify-between mb-5">
+        <div className="space-y-1">
+          <h2 className="text-xl font-bold text-neutral-900">Continue Your Loop</h2>
+          <p className="text-sm text-neutral-500">
+            이어가고 있는 학습 흐름을 선택하고 계속 학습해보세요.
+          </p>
+        </div>
+        <Link
+          href="/my-loop"
+          className="inline-flex items-center gap-1 text-sm font-medium text-neutral-400 hover:text-[#F96A84] transition-colors shrink-0 mb-0.5"
+        >
+          모두 보기
+          <ArrowRight className="h-4 w-4" />
+        </Link>
+      </div>
 
-        <div className="flex items-start justify-between mb-6">
-          <div className="space-y-1">
-            <span className="inline-block px-3 py-1 rounded-full bg-[#F96A84]/10 text-[#F96A84] text-xs font-medium">
-              이어 학습하기
-            </span>
-            <h2 className="text-xl font-bold text-neutral-900">최근 저장한 자료</h2>
+      {/* Main 3-panel card */}
+      <div className="rounded-2xl bg-white border border-neutral-100 shadow-sm overflow-hidden">
+        <div className="flex flex-col lg:flex-row">
+
+          {/* ── Left panel: Donut chart ─────────────────────────── */}
+          <div className="flex flex-col items-center justify-center gap-4 px-8 py-8 lg:py-10 lg:w-56 lg:shrink-0 bg-neutral-50/60 border-b lg:border-b-0 lg:border-r border-neutral-100">
+            <DonutChart percent={percent} />
+            <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide">
+              학습 진행률
+            </p>
           </div>
-          <Link
-            href="/my-loop"
-            className="inline-flex items-center gap-1 text-sm font-medium text-neutral-400 hover:text-primary transition-colors mt-1"
-          >
-            전체 보기
-            <ArrowRight className="h-4 w-4" />
-          </Link>
-        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          {resources.map((r) => (
-            <SavedResourceCard key={r.id} resource={r} />
-          ))}
-        </div>
+          {/* ── Center panel: Flow info + Steps ─────────────────── */}
+          <div className="flex flex-col justify-center px-6 py-8 lg:flex-1 border-b lg:border-b-0 lg:border-r border-neutral-100">
+            <span className="self-start inline-block px-3 py-1 rounded-full bg-[#F96A84]/10 text-[#F96A84] text-xs font-medium mb-3">
+              진행중인 플로우
+            </span>
+            <h3 className="text-lg font-bold text-neutral-900 mb-1 leading-snug">{flowTitle}</h3>
+            <p className="text-sm text-neutral-500 mb-6 leading-relaxed break-keep">{description}</p>
+            <StepProgress steps={steps} currentStep={currentStep} />
+          </div>
 
+          {/* ── Right panel: Next resources ─────────────────────── */}
+          <div className="flex flex-col px-6 py-8 lg:w-[380px] lg:shrink-0">
+            <p className="text-sm font-bold text-neutral-800 mb-1">다음 추천자료</p>
+            <p className="text-xs text-neutral-400 mb-3">현재 스텝의 학습 자료를 이어보세요.</p>
+            <div className="flex flex-col">
+              {nextResources.map((r, i) => (
+                <NextResourceRow key={r.id} resource={r} index={i} />
+              ))}
+            </div>
+          </div>
+
+        </div>
       </div>
     </section>
   )

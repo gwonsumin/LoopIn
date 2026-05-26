@@ -24,68 +24,61 @@ export default function NewsletterSection() {
   }
 
   return (
-    <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-      <div className="bg-neutral-900 rounded-3xl px-8 py-12 text-white">
-        <div className="max-w-lg mx-auto text-center">
-          {/* 태그 칩 */}
-          <span className="inline-block px-3 py-1 rounded-full bg-white/10 text-white/80 text-xs font-medium">
-            뉴스레터
-          </span>
+    <section className="bg-neutral-50 border-t border-neutral-100">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-8">
 
-          {/* 제목 */}
-          <h2 className="text-2xl font-bold mt-4">
-            새로운 학습 자료, 가장 먼저 받아보세요
-          </h2>
-
-          {/* 부제 */}
-          <p className="text-sm text-white/60 mt-2">
-            매주 1회, 직무별 큐레이션 자료를 보내드려요
-          </p>
-
-          {/* 폼 or 성공 메시지 */}
-          {state === "success" ? (
-            <p className="text-white/80 text-sm text-center mt-6">
-              ✅ 구독 완료! 다음 뉴스레터를 기대해주세요
+          {/* 좌측: 텍스트 */}
+          <div className="max-w-sm text-left">
+            <h2 className="text-2xl font-bold leading-snug text-neutral-900">
+              새로운 자료, 놓치지 마세요.
+            </h2>
+            <p className="text-sm text-neutral-500 mt-2">
+              업데이트되는 자료와 추천 콘텐츠를 이메일로 받아보세요.
             </p>
-          ) : (
-            <form onSubmit={handleSubmit} noValidate className="mt-6">
-              <div className="flex gap-2">
-                <input
-                  id="newsletter-email"
-                  name="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => {
-                    setEmail(e.target.value)
-                    if (state !== "idle") setState("idle")
-                  }}
-                  placeholder="이메일 주소를 입력하세요"
-                  className="flex-1 bg-white/10 border border-white/20 text-white placeholder:text-white/40 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#F96A84] transition-colors"
-                />
-                <button
-                  type="submit"
-                  className="bg-[#F96A84] hover:bg-[#E84D6A] text-white px-6 py-3 rounded-xl text-sm font-medium whitespace-nowrap transition-colors"
-                >
-                  구독하기
-                </button>
-              </div>
-              {state === "error-empty" && (
-                <p className="text-red-400 text-xs mt-2 text-left">
-                  이메일을 입력해주세요
-                </p>
-              )}
-              {state === "error-format" && (
-                <p className="text-red-400 text-xs mt-2 text-left">
-                  올바른 이메일 형식으로 입력해주세요
-                </p>
-              )}
-            </form>
-          )}
+          </div>
 
-          {/* 하단 안내 */}
-          <p className="text-xs text-white/40 mt-4">
-            스팸 없음 · 언제든 수신 취소 가능
-          </p>
+          {/* 우측: 폼 */}
+          <div className="w-full md:w-auto md:min-w-[420px] shrink-0">
+            {state === "success" ? (
+              <p className="text-neutral-700 text-sm">
+                ✅ 구독 완료! 다음 뉴스레터를 기대해주세요
+              </p>
+            ) : (
+              <form onSubmit={handleSubmit} noValidate>
+                <div className="flex gap-2">
+                  <input
+                    id="newsletter-email"
+                    name="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => {
+                      setEmail(e.target.value)
+                      if (state !== "idle") setState("idle")
+                    }}
+                    placeholder="이메일 주소를 입력하세요"
+                    className="flex-1 bg-white border border-neutral-200 text-neutral-900 placeholder:text-neutral-400 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#F96A84] transition-colors"
+                  />
+                  <button
+                    type="submit"
+                    className="bg-[#F96A84] hover:bg-[#E84D6A] text-white px-6 py-3 rounded-xl text-sm font-medium whitespace-nowrap transition-colors"
+                  >
+                    구독하기
+                  </button>
+                </div>
+                {state === "error-empty" && (
+                  <p className="text-red-500 text-xs mt-2">이메일을 입력해주세요</p>
+                )}
+                {state === "error-format" && (
+                  <p className="text-red-500 text-xs mt-2">올바른 이메일 형식으로 입력해주세요</p>
+                )}
+              </form>
+            )}
+            <p className="text-xs text-neutral-400 mt-3">
+              스팸 없음 · 언제든 수신 취소 가능
+            </p>
+          </div>
+
         </div>
       </div>
     </section>
