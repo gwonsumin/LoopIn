@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 
-type FormState = "idle" | "error-empty" | "error-format" | "success"
+type FormState = "idle" | "loading" | "error-empty" | "error-format" | "error-server" | "already-subscribed" | "success"
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
@@ -10,7 +10,7 @@ export default function NewsletterSection() {
   const [email, setEmail] = useState("")
   const [state, setState] = useState<FormState>("idle")
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!email.trim()) {
       setState("error-empty")
@@ -20,7 +20,26 @@ export default function NewsletterSection() {
       setState("error-format")
       return
     }
-    setState("success")
+    setState("loading")
+    try {
+      const res = await fetch("/api/newsletter/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim() }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        setState("error-server")
+        return
+      }
+      if (data.message === "already_subscribed") {
+        setState("already-subscribed")
+      } else {
+        setState("success")
+      }
+    } catch {
+      setState("error-server")
+    }
   }
 
   return (
@@ -57,13 +76,15 @@ export default function NewsletterSection() {
                       if (state !== "idle") setState("idle")
                     }}
                     placeholder="이메일 주소를 입력하세요"
-                    className="flex-1 bg-white border border-neutral-200 text-neutral-900 placeholder:text-neutral-400 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#F96A84] transition-colors"
+                    disabled={state === "loading"}
+                    className="flex-1 bg-white border border-neutral-200 text-neutral-900 placeholder:text-neutral-400 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#F96A84] transition-colors disabled:opacity-60"
                   />
                   <button
                     type="submit"
-                    className="bg-[#F96A84] hover:bg-[#E84D6A] text-white px-6 py-3 rounded-xl text-sm font-medium whitespace-nowrap transition-colors"
+                    disabled={state === "loading"}
+                    className="bg-[#F96A84] hover:bg-[#E84D6A] text-white px-6 py-3 rounded-xl text-sm font-medium whitespace-nowrap transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
                   >
-                    구독하기
+                    {state === "loading" ? "구독 중..." : "구독하기"}
                   </button>
                 </div>
                 {state === "error-empty" && (
@@ -71,6 +92,12 @@ export default function NewsletterSection() {
                 )}
                 {state === "error-format" && (
                   <p className="text-red-500 text-xs mt-2">올바른 이메일 형식으로 입력해주세요</p>
+                )}
+                {state === "already-subscribed" && (
+                  <p className="text-neutral-500 text-xs mt-2">이미 구독 중인 이메일이에요 😊</p>
+                )}
+                {state === "error-server" && (
+                  <p className="text-red-500 text-xs mt-2">잠시 후 다시 시도해주세요</p>
                 )}
               </form>
             )}
