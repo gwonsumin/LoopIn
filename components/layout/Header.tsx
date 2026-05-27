@@ -42,13 +42,13 @@ const NAV_ITEMS: NavItem[] = [
   },
   {
     label: "Learning Flows",
-    href: "/search?view=flows",
+    href: "/flows",
     dropdown: [
-      { label: "UX Portfolio", href: "/search?flow=ux-portfolio" },
-      { label: "Frontend Starter", href: "/search?flow=frontend-starter" },
-      { label: "AI Productivity", href: "/search?flow=ai-productivity" },
-      { label: "Data Analysis", href: "/search?flow=data-analysis" },
-      { label: "모든 Flow 보기 →", href: "/search?view=flows", isPrimary: true },
+      { label: "UX Portfolio", href: "/flows/ux-portfolio" },
+      { label: "Frontend Starter", href: "/flows/frontend-starter" },
+      { label: "AI Productivity", href: "/flows/ai-productivity" },
+      { label: "Data Analysis", href: "/flows/data-analysis" },
+      { label: "모든 Flow 보기 →", href: "/flows", isPrimary: true },
     ],
   },
   {

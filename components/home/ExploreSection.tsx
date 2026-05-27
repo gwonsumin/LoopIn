@@ -45,20 +45,25 @@ export default function ExploreSection({ categories }: Props) {
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       {/* 섹션 헤더 */}
-      <div className="mb-8 space-y-1.5">
-        <h2 className="flex items-center gap-2 text-2xl font-bold text-neutral-900">
-          <Image
-            src="/icons/sparkle.svg"
-            alt=""
-            width={22}
-            height={22}
-            className="flex-shrink-0"
-          />
-          Explore by Interest
-        </h2>
-        <p className="text-sm text-neutral-400">
-          관심 분야를 선택하고, 연결된 학습 흐름을 탐색해보세요.
-        </p>
+      <div className="flex items-end justify-between mb-8">
+        <div className="space-y-1.5">
+          <h2 className="flex items-center gap-2 text-2xl font-bold text-neutral-900">
+            <Image
+              src="/icons/sparkle.svg"
+              alt=""
+              width={22}
+              height={22}
+              className="flex-shrink-0"
+            />
+            Explore by Interest
+          </h2>
+          <p className="text-sm text-neutral-400">
+            관심 분야를 선택하고, 연결된 학습 흐름을 탐색해보세요.
+          </p>
+        </div>
+        <Link href="/search" className="text-sm font-medium text-[#F96A84] hover:underline shrink-0 mb-0.5">
+          전체 카테고리 보기 →
+        </Link>
       </div>
 
       {/* 카드 그리드 */}
@@ -111,11 +116,6 @@ export default function ExploreSection({ categories }: Props) {
         })}
       </div>
 
-      <div className="mt-6 text-center">
-        <Link href="/search" className="text-sm font-medium text-primary hover:underline">
-          전체 카테고리 보기 →
-        </Link>
-      </div>
     </section>
   )
 }

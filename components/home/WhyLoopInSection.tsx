@@ -1,40 +1,16 @@
 import Link from "next/link"
 import { ArrowRight, Search, Bookmark, FolderOpen, Repeat } from "lucide-react"
 
-// ── Before: platform nodes + loop image ─────────────────────────────────────
-type PlatformNode = {
-  label: string
-  icon: string
-  style: React.CSSProperties
-}
-
-const PLATFORM_NODES: PlatformNode[] = [
-  { label: "YouTube",  icon: "/illustrations/logos/youtube-color-svgrepo-com%201.svg", style: { top: "12%", left: "4%" } },
-  { label: "Velog",    icon: "/illustrations/logos/naver-square-svgrepo-com%201.svg",  style: { top: "5%",  right: "4%" } },
-  { label: "Notion",   icon: "/illustrations/logos/notion%201.svg",                    style: { top: "48%", left: "2%" } },
-  { label: "GitHub",   icon: "/illustrations/logos/github%201.svg",                    style: { top: "46%", right: "2%" } },
-  { label: "Figma",    icon: "/illustrations/logos/figma%201.svg",                     style: { bottom: "10%", left: "7%" } },
-  { label: "ChatGPT",  icon: "/illustrations/logos/chatgpt%201.svg",                   style: { bottom: "6%", right: "4%" } },
-]
-
+// ── Before: chaos illustration ───────────────────────────────────────────────
 function BeforeGraph() {
   return (
-    <div className="relative h-56 w-full overflow-visible">
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/illustrations/brfore-loop-img.png" alt="" className="w-40 h-40 object-contain" aria-hidden="true" />
-      </div>
-      {PLATFORM_NODES.map((node) => (
-        <div
-          key={node.label}
-          className="absolute flex items-center gap-2 bg-white rounded-full px-3 py-2 shadow-sm border border-neutral-100"
-          style={node.style}
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={node.icon} alt="" width={18} height={18} className="shrink-0" />
-          <span className="text-xs font-medium text-neutral-700 whitespace-nowrap">{node.label}</span>
-        </div>
-      ))}
+    <div className="flex-1 flex items-center justify-center">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/illustrations/before-learning-chaos.svg"
+        alt="흩어진 학습 도구들"
+        className="w-full max-w-md object-contain"
+      />
     </div>
   )
 }
@@ -52,12 +28,17 @@ function AfterFlowDiagram() {
     <div>
       {/* Circles + dot connectors row */}
       <div className="relative flex items-center justify-between">
-        {/* Background line + dots spanning between circle centers */}
-        <div className="absolute left-8 right-8 top-1/2 -translate-y-1/2 flex items-center pointer-events-none">
+        {/* Background line + dots: 3 segments between 4 circles, each [line][dot][line] */}
+        <div className="absolute left-7 right-7 top-1/2 -translate-y-1/2 flex items-center pointer-events-none">
+          {/* Segment 1 */}
           <div className="flex-1 h-px bg-violet-200" />
           <div className="w-1.5 h-1.5 rounded-full bg-violet-300 shrink-0" />
           <div className="flex-1 h-px bg-violet-200" />
+          {/* Segment 2 */}
+          <div className="flex-1 h-px bg-violet-200" />
           <div className="w-1.5 h-1.5 rounded-full bg-violet-300 shrink-0" />
+          <div className="flex-1 h-px bg-violet-200" />
+          {/* Segment 3 */}
           <div className="flex-1 h-px bg-violet-200" />
           <div className="w-1.5 h-1.5 rounded-full bg-violet-300 shrink-0" />
           <div className="flex-1 h-px bg-violet-200" />
@@ -67,7 +48,7 @@ function AfterFlowDiagram() {
         {FLOW_STEPS.map(({ Icon, label }) => (
           <div
             key={label}
-            className="relative z-10 w-16 h-16 rounded-full bg-neutral-100 flex items-center justify-center shrink-0"
+            className="relative z-10 w-14 h-14 rounded-full bg-white border border-violet-200 flex items-center justify-center shrink-0"
           >
             <Icon className="w-7 h-7 text-violet-500" />
           </div>
@@ -120,10 +101,9 @@ export default function WhyLoopInSection() {
             흩어진 자료, 끊기는 학습 흐름
           </h3>
           <p className="text-sm text-neutral-400 leading-relaxed mb-5">
-            유튜브, 블로그, 노션, 커뮤니티를 오가며
-            반복되는 탐색 피로
+            유튜브, 블로그, 노션, 커뮤니티를 오가며 반복되는 탐색 피로
           </p>
-          <div className="mt-auto bg-white rounded-xl p-4 border border-neutral-100 overflow-hidden">
+          <div className="flex-1 flex items-center">
             <BeforeGraph />
           </div>
         </div>
