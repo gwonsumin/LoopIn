@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import type { Resource } from "@/lib/types"
+import { mockFlows } from "@/lib/mock/flows"
 
 type ProgressStatus = 'not_started' | 'started' | 'completed'
 
@@ -50,6 +51,7 @@ const LEVEL_LABEL: Record<string, string> = {
 
 export function LearnClient({ resource, related }: { resource: Resource; related: Resource[] }) {
   const storageKey = `loopin-progress-${resource.id}`
+  const relatedFlow = mockFlows.find(f => f.steps.some(s => s.resourceId === resource.id))
 
   const [status, setStatus] = useState<ProgressStatus>('not_started')
   const [percent, setPercent] = useState(0)
@@ -174,6 +176,36 @@ export function LearnClient({ resource, related }: { resource: Resource; related
                 allowFullScreen
                 className="w-full h-full"
               />
+            </div>
+          </div>
+        )}
+
+        {/* 완료 패널 */}
+        {status === 'completed' && (
+          <div className="rounded-2xl bg-white/5 border border-white/10 p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div>
+              <p className="text-sm font-semibold text-white">🎉 학습 완료!</p>
+              {relatedFlow && (
+                <p className="text-xs text-neutral-400 mt-0.5">
+                  이 자료는 <span className="text-primary">{relatedFlow.title}</span>의 일부예요
+                </p>
+              )}
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              {relatedFlow && (
+                <Link
+                  href={`/flows/${relatedFlow.slug}`}
+                  className="px-4 py-2 rounded-xl bg-primary hover:bg-primary-dark text-white text-xs font-medium transition-colors"
+                >
+                  Flow 이어가기
+                </Link>
+              )}
+              <Link
+                href="/my-loop"
+                className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-white text-xs font-medium transition-colors"
+              >
+                My Loop 보기
+              </Link>
             </div>
           </div>
         )}

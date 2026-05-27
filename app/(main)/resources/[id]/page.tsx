@@ -2,6 +2,7 @@ import { notFound } from "next/navigation"
 import Link from "next/link"
 import type { Metadata } from "next"
 import { mockResources } from "@/lib/mock/resources"
+import { mockFlows } from "@/lib/mock/flows"
 import type { Resource } from "@/lib/types"
 import { SaveButton } from "@/components/loop/SaveButton"
 import { ReportButton } from "@/components/resource/ReportButton"
@@ -163,6 +164,9 @@ export default async function ResourceDetailPage({
   if (!resource) notFound()
 
   const related = await getRelated(resource)
+  const containedFlows = mockFlows.filter(f =>
+    f.steps.some(s => s.resourceId === resource.id)
+  )
 
   return (
     <div className="bg-neutral-50">
@@ -220,6 +224,22 @@ export default async function ResourceDetailPage({
                 </Link>
               ))}
             </div>
+
+            {/* 포함된 Flow */}
+            {containedFlows.length > 0 && (
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-xs text-neutral-400">포함된 Flow</span>
+                {containedFlows.map(f => (
+                  <Link
+                    key={f.slug}
+                    href={`/flows/${f.slug}`}
+                    className="inline-flex items-center gap-1 text-xs px-3 py-1 rounded-full bg-primary/8 text-primary border border-primary/20 hover:bg-primary/15 transition-colors"
+                  >
+                    ↗ {f.title}
+                  </Link>
+                ))}
+              </div>
+            )}
 
             {/* 바로가기 버튼 */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">

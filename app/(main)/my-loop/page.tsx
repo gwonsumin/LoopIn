@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { useSession } from "next-auth/react"
 import { useQuery } from "@tanstack/react-query"
@@ -170,6 +170,7 @@ function ResourceGrid({ resources }: { resources: Resource[] }) {
 
 export default function MyLoopPage() {
   const { status } = useSession()
+  const [inProgressCount, setInProgressCount] = useState(0)
 
   const { data: apiData, isLoading: apiLoading } = useQuery({
     queryKey: ["loops"],
@@ -181,6 +182,23 @@ export default function MyLoopPage() {
 
   const resources = apiData?.data ?? []
   const isLoading = status === "loading" || (status === "authenticated" && apiLoading)
+
+  useEffect(() => {
+    if (resources.length === 0) return
+    let count = 0
+    for (const r of resources) {
+      const raw = localStorage.getItem(`loopin-progress-${r.id}`)
+      if (raw) {
+        try {
+          const data = JSON.parse(raw)
+          if (data.status === "started") count++
+        } catch {
+          // ignore
+        }
+      }
+    }
+    setInProgressCount(count)
+  }, [resources])
 
   return (
     <div className="bg-neutral-50">
@@ -199,8 +217,8 @@ export default function MyLoopPage() {
           <LoginPrompt />
         ) : (
           <>
-            <StatsRow savedCount={resources.length} />
-            <ContinuingSection />
+            <StatsRow savedCount={resources.length} inProgressCount={inProgressCount} />
+            <ContinuingSection resources={resources} />
             <MyFlowsSection />
 
             {/* 최근 저장한 자료 */}
