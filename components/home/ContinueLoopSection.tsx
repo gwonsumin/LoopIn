@@ -1,16 +1,16 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { ArrowRight } from "lucide-react"
 import { cn } from "@/lib/utils"
 import type { Resource } from "@/lib/types"
 
-const MOCK_PROGRESS = {
-  flowTitle: "UX Portfolio Flow",
-  description: "실무에서 필요로 하는 포트폴리오를 단계적으로 완성해보세요.",
-  percent: 65,
-  steps: ["리서치", "케이스스터디", "UX Writing", "프로토타이핑", "포트폴리오 구성"],
-  currentStep: 2,
+interface ProgressData {
+  status: 'not_started' | 'started' | 'completed'
+  percent: number
+  updatedAt: string
 }
 
 const TYPE_LABEL: Record<string, string> = {
@@ -102,9 +102,15 @@ function StepProgress({ steps, currentStep }: { steps: string[]; currentStep: nu
   )
 }
 
-function NextResourceRow({ resource, index }: { resource: Resource; index: number }) {
+function NextResourceRow({ resource, index, progressData }: { resource: Resource; index: number; progressData?: ProgressData }) {
+  const router = useRouter()
   const thumbSrc = resource.thumbnail ?? `/images/resource-thumb-0${index + 1}.png`
   const duration = DURATION_BY_TYPE[resource.type] ?? "15분"
+
+  function handleRestart() {
+    localStorage.removeItem(`loopin-progress-${resource.id}`)
+    router.push(`/resources/${resource.id}/learn`)
+  }
 
   return (
     <div className="flex items-center gap-3 py-3 border-b border-neutral-100 last:border-b-0">
@@ -114,7 +120,7 @@ function NextResourceRow({ resource, index }: { resource: Resource; index: numbe
         <img src={thumbSrc} alt="" className="w-full h-full object-cover" />
       </div>
 
-      {/* Title + meta */}
+      {/* Title + meta + progress */}
       <div className="flex-1 min-w-0">
         <p className="text-sm font-medium text-neutral-800 line-clamp-1 leading-snug">
           {resource.title}
@@ -122,22 +128,31 @@ function NextResourceRow({ resource, index }: { resource: Resource; index: numbe
         <p className="text-xs text-neutral-400 mt-0.5">
           {TYPE_LABEL[resource.type]} · {duration}
         </p>
+        {progressData && progressData.percent > 0 && (
+          <div className="mt-1.5 h-1 w-full bg-neutral-100 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-primary rounded-full transition-[width] duration-300"
+              style={{ width: `${progressData.percent}%` }}
+            />
+          </div>
+        )}
       </div>
 
       {/* Action buttons */}
       <div className="flex items-center gap-1.5 shrink-0">
         <button
           type="button"
+          onClick={handleRestart}
           className="px-3 py-1.5 rounded-full border border-neutral-200 text-xs font-medium text-neutral-600 hover:border-neutral-300 hover:bg-neutral-50 transition-colors whitespace-nowrap"
         >
           처음부터
         </button>
-        <button
-          type="button"
+        <Link
+          href={`/resources/${resource.id}/learn`}
           className="px-3 py-1.5 rounded-full bg-[#F96A84] text-xs font-medium text-white hover:bg-[#e85a74] transition-colors whitespace-nowrap"
         >
           이어보기
-        </button>
+        </Link>
       </div>
     </div>
   )
@@ -148,10 +163,40 @@ interface Props {
 }
 
 export default function ContinueLoopSection({ resources }: Props) {
+  const [progressMap, setProgressMap] = useState<Record<string, ProgressData>>({})
+
+  useEffect(() => {
+    const map: Record<string, ProgressData> = {}
+    resources.forEach(r => {
+      const raw = localStorage.getItem(`loopin-progress-${r.id}`)
+      if (raw) {
+        try { map[r.id] = JSON.parse(raw) } catch {}
+      }
+    })
+    setProgressMap(map)
+  }, [resources])
+
   if (resources.length === 0) return null
 
-  const { flowTitle, description, percent, steps, currentStep } = MOCK_PROGRESS
-  const nextResources = resources.slice(0, 3)
+  const started = resources.filter(r => (progressMap[r.id]?.percent ?? 0) > 0)
+  const avgPercent = started.length
+    ? Math.round(started.reduce((s, r) => s + (progressMap[r.id]?.percent ?? 0), 0) / started.length)
+    : 0
+
+  const nextResources = [...resources]
+    .sort((a, b) => {
+      const pa = progressMap[a.id]
+      const pb = progressMap[b.id]
+      if (pa?.status === 'completed' && pb?.status !== 'completed') return 1
+      if (pb?.status === 'completed' && pa?.status !== 'completed') return -1
+      return (pb?.updatedAt ?? '').localeCompare(pa?.updatedAt ?? '')
+    })
+    .slice(0, 3)
+
+  const flowTitle = "UX Portfolio Flow"
+  const description = "실무에서 필요로 하는 포트폴리오를 단계적으로 완성해보세요."
+  const steps = ["리서치", "케이스스터디", "UX Writing", "프로토타이핑", "포트폴리오 구성"]
+  const currentStep = 2
 
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
@@ -178,7 +223,7 @@ export default function ContinueLoopSection({ resources }: Props) {
 
           {/* ── Left panel: Donut chart ─────────────────────────── */}
           <div className="flex flex-col items-center justify-center gap-4 px-8 py-8 lg:py-10 lg:w-56 lg:shrink-0 bg-neutral-50/60 border-b lg:border-b-0 lg:border-r border-neutral-100">
-            <DonutChart percent={percent} />
+            <DonutChart percent={avgPercent} />
             <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide">
               학습 진행률
             </p>
@@ -200,7 +245,7 @@ export default function ContinueLoopSection({ resources }: Props) {
             <p className="text-xs text-neutral-400 mb-3">현재 스텝의 학습 자료를 이어보세요.</p>
             <div className="flex flex-col">
               {nextResources.map((r, i) => (
-                <NextResourceRow key={r.id} resource={r} index={i} />
+                <NextResourceRow key={r.id} resource={r} index={i} progressData={progressMap[r.id]} />
               ))}
             </div>
           </div>
