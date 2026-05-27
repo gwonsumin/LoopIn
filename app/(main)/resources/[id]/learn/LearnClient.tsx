@@ -54,7 +54,8 @@ export function LearnClient({ resource, related }: { resource: Resource; related
   const [status, setStatus] = useState<ProgressStatus>('not_started')
   const [percent, setPercent] = useState(0)
 
-  const youtubeId = extractYouTubeId(resource.url)
+  const DEMO_VIDEO_ID = 'Tn6-PIqc4UM'
+  const youtubeId = extractYouTubeId(resource.url) ?? DEMO_VIDEO_ID
 
   // Load persisted progress
   useEffect(() => {
