@@ -6,18 +6,18 @@ import type { Resource } from "@/lib/types"
 
 type ProgressStatus = 'not_started' | 'started' | 'completed'
 
+interface ProgressData {
+  status: ProgressStatus
+  percent: number
+  updatedAt: string
+}
+
 function extractYouTubeId(url: string): string | null {
   try {
     const parsed = new URL(url)
-    if (parsed.hostname.includes('youtube.com')) {
-      return parsed.searchParams.get('v')
-    }
-    if (parsed.hostname === 'youtu.be') {
-      return parsed.pathname.slice(1)
-    }
-  } catch {
-    // invalid URL
-  }
+    if (parsed.hostname.includes('youtube.com')) return parsed.searchParams.get('v')
+    if (parsed.hostname === 'youtu.be') return parsed.pathname.slice(1)
+  } catch { /* invalid URL */ }
   return null
 }
 
@@ -28,7 +28,6 @@ const TYPE_BADGE: Record<string, string> = {
   lecture:  "bg-pink-50 text-pink-700",
   practice: "bg-orange-50 text-orange-700",
 }
-
 const TYPE_LABEL: Record<string, string> = {
   article:  "아티클",
   video:    "영상",
@@ -36,122 +35,177 @@ const TYPE_LABEL: Record<string, string> = {
   lecture:  "강의",
   practice: "실습",
 }
+const LEVEL_BADGE: Record<string, string> = {
+  beginner:     "bg-emerald-50 text-emerald-700",
+  intermediate: "bg-yellow-50 text-yellow-700",
+  advanced:     "bg-red-50 text-red-700",
+  practical:    "bg-neutral-100 text-neutral-600",
+}
+const LEVEL_LABEL: Record<string, string> = {
+  beginner:     "입문",
+  intermediate: "중급",
+  advanced:     "고급",
+  practical:    "실무",
+}
 
-export function LearnClient({ resource }: { resource: Resource }) {
+export function LearnClient({ resource, related }: { resource: Resource; related: Resource[] }) {
   const storageKey = `loopin-progress-${resource.id}`
-  const [status, setStatus] = useState<ProgressStatus>('not_started')
 
+  const [status, setStatus] = useState<ProgressStatus>('not_started')
+  const [percent, setPercent] = useState(0)
+
+  const youtubeId = extractYouTubeId(resource.url)
+
+  // Load persisted progress
   useEffect(() => {
-    const saved = localStorage.getItem(storageKey) as ProgressStatus | null
-    if (saved === 'completed') {
-      setStatus('completed')
-    } else {
-      localStorage.setItem(storageKey, 'started')
-      setStatus('started')
+    const raw = localStorage.getItem(storageKey)
+    if (raw) {
+      try {
+        const data: ProgressData = JSON.parse(raw)
+        setStatus(data.status)
+        setPercent(data.percent)
+        return
+      } catch { /* malformed, ignore */ }
     }
+    const initial: ProgressData = { status: 'started', percent: 0, updatedAt: new Date().toISOString() }
+    localStorage.setItem(storageKey, JSON.stringify(initial))
+    setStatus('started')
   }, [storageKey])
 
+  // Time-based progress (1% per 3s ≈ 99% at ~5min)
+  useEffect(() => {
+    if (status === 'completed') return
+    const timer = setInterval(() => {
+      setPercent(prev => {
+        const next = Math.min(prev + 1, 99)
+        const data: ProgressData = { status: 'started', percent: next, updatedAt: new Date().toISOString() }
+        localStorage.setItem(storageKey, JSON.stringify(data))
+        return next
+      })
+    }, 3000)
+    return () => clearInterval(timer)
+  }, [status, storageKey])
+
   function handleComplete() {
-    localStorage.setItem(storageKey, 'completed')
+    const data: ProgressData = { status: 'completed', percent: 100, updatedAt: new Date().toISOString() }
+    localStorage.setItem(storageKey, JSON.stringify(data))
     setStatus('completed')
+    setPercent(100)
   }
 
-  const youtubeId = resource.type === 'lecture' ? extractYouTubeId(resource.url) : null
+  const displayPercent = status === 'completed' ? 100 : percent
 
   return (
-    <div className="bg-neutral-50 min-h-screen">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
-
-        {/* 뒤로가기 */}
+    <>
+      {/* SlimHeader */}
+      <header className="fixed top-0 left-0 right-0 z-50 h-14 bg-white/95 backdrop-blur border-b border-neutral-100 flex items-center px-4 gap-3">
         <Link
           href={`/resources/${resource.id}`}
-          className="inline-flex items-center gap-1.5 text-sm text-neutral-500 hover:text-neutral-800 transition-colors mb-6"
+          className="flex items-center gap-1.5 text-sm text-neutral-500 hover:text-neutral-800 transition-colors shrink-0"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <path d="M15 18l-6-6 6-6" />
           </svg>
-          자료 상세로 돌아가기
+          뒤로
         </Link>
-
-        <div className="space-y-6">
-
-          {/* 제목 */}
-          <div>
-            <div className="flex items-center gap-2 mb-2">
-              <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-medium ${TYPE_BADGE[resource.type]}`}>
-                {TYPE_LABEL[resource.type]}
-              </span>
-            </div>
-            <h1 className="text-xl sm:text-2xl font-bold text-neutral-900 leading-snug">
-              {resource.title}
-            </h1>
-          </div>
-
-          {/* 콘텐츠 */}
-          {youtubeId ? (
-            <div className="rounded-2xl overflow-hidden shadow-sm bg-black">
-              <div className="aspect-video">
-                <iframe
-                  src={`https://www.youtube.com/embed/${youtubeId}`}
-                  title={resource.title}
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                  className="w-full h-full"
-                />
-              </div>
-            </div>
+        <p className="flex-1 text-sm font-medium text-neutral-800 truncate">{resource.title}</p>
+        <div className="flex items-center gap-2 shrink-0">
+          <span className="text-xs text-neutral-400">{displayPercent}%</span>
+          {status === 'completed' ? (
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-medium border border-emerald-100">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M20 6L9 17l-5-5" />
+              </svg>
+              완료됨
+            </span>
           ) : (
-            <div className="bg-white rounded-2xl border border-neutral-100 shadow-sm p-6 sm:p-8 space-y-5">
-              <p className="text-base text-neutral-600 leading-relaxed">
-                {resource.description}
-              </p>
-              <div className="flex flex-wrap gap-1.5">
-                {resource.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="text-xs px-3 py-1 bg-neutral-50 text-neutral-500 rounded-full border border-neutral-100"
-                  >
-                    #{tag}
-                  </span>
-                ))}
-              </div>
-              <a
-                href={resource.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-primary hover:bg-primary-dark text-white text-sm font-medium transition-colors duration-200"
-              >
-                외부 링크로 열기
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                  <polyline points="15 3 21 3 21 9" />
-                  <line x1="10" y1="14" x2="21" y2="3" />
-                </svg>
-              </a>
-            </div>
+            <button
+              onClick={handleComplete}
+              className="px-3 py-1 rounded-full bg-primary hover:bg-primary-dark text-white text-xs font-medium transition-colors"
+            >
+              완료하기
+            </button>
           )}
-
-          {/* 완료 상태 */}
-          <div className="pt-2">
-            {status === 'completed' ? (
-              <div className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-emerald-50 text-emerald-700 text-sm font-medium border border-emerald-100">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <path d="M20 6L9 17l-5-5" />
-                </svg>
-                완료한 자료예요
-              </div>
-            ) : (
-              <button
-                onClick={handleComplete}
-                className="px-6 py-3 rounded-xl bg-primary hover:bg-primary-dark text-white text-sm font-medium transition-colors duration-200"
-              >
-                완료하기
-              </button>
-            )}
-          </div>
-
         </div>
+      </header>
+
+      {/* ProgressBar */}
+      <div className="fixed top-14 left-0 w-full h-1 bg-neutral-800 z-40">
+        <div
+          className="h-full bg-primary transition-[width] duration-300"
+          style={{ width: `${displayPercent}%` }}
+        />
       </div>
-    </div>
+
+      {/* Body */}
+      <div className="pt-16 max-w-4xl mx-auto px-4 py-8 space-y-8">
+
+        {/* 자료 메타 */}
+        <div>
+          <div className="flex items-center gap-2 mb-3">
+            <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-medium ${TYPE_BADGE[resource.type]}`}>
+              {TYPE_LABEL[resource.type]}
+            </span>
+            <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-medium ${LEVEL_BADGE[resource.level]}`}>
+              {LEVEL_LABEL[resource.level]}
+            </span>
+          </div>
+          <h1 className="text-xl sm:text-2xl font-bold text-white leading-snug">
+            {resource.title}
+          </h1>
+          <div className="flex flex-wrap gap-1.5 mt-3">
+            {resource.tags.map((tag) => (
+              <span key={tag} className="text-xs px-3 py-1 bg-white/10 text-neutral-400 rounded-full">
+                #{tag}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        {/* 콘텐츠 */}
+        {youtubeId && (
+          <div className="rounded-2xl overflow-hidden bg-black">
+            <div className="aspect-video">
+              <iframe
+                src={`https://www.youtube.com/embed/${youtubeId}`}
+                title={resource.title}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className="w-full h-full"
+              />
+            </div>
+          </div>
+        )}
+
+        {/* 다음 추천 자료 */}
+        {related.length > 0 && (
+          <section>
+            <h2 className="text-base font-semibold text-neutral-300 mb-4">다음 추천 자료</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              {related.map((r) => (
+                <Link
+                  key={r.id}
+                  href={`/resources/${r.id}`}
+                  className="group flex flex-col rounded-2xl bg-white/5 border border-white/10 p-4 hover:-translate-y-0.5 hover:bg-white/10 transition-all duration-200"
+                >
+                  <div className="flex items-center gap-1.5 mb-2">
+                    <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${TYPE_BADGE[r.type]}`}>
+                      {TYPE_LABEL[r.type]}
+                    </span>
+                  </div>
+                  <p className="text-sm font-semibold text-white line-clamp-2 leading-snug group-hover:text-primary transition-colors">
+                    {r.title}
+                  </p>
+                  <p className="text-xs text-neutral-500 mt-1 line-clamp-2 leading-relaxed">
+                    {r.description}
+                  </p>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+      </div>
+    </>
   )
 }

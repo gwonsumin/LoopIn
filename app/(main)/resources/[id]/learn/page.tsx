@@ -38,6 +38,34 @@ async function getResource(id: string): Promise<Resource | null> {
   return mockResources.find((r) => r.id === id) ?? null
 }
 
+async function getRelated(resource: Resource): Promise<Resource[]> {
+  if (isObjectId(resource.id)) {
+    try {
+      await connectDB()
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const docs = await ResourceModel.find({ category: resource.category, _id: { $ne: resource.id } }).limit(3).lean() as any[]
+      return docs.map((doc: any) => ({
+        id: String(doc._id),
+        title: doc.title,
+        description: doc.description,
+        category: doc.category,
+        level: doc.level,
+        type: doc.type,
+        tags: doc.tags,
+        thumbnail: doc.thumbnail,
+        url: doc.url,
+        savedCount: doc.savedCount,
+        createdAt: doc.createdAt instanceof Date ? doc.createdAt.toISOString() : String(doc.createdAt),
+      }))
+    } catch {
+      // DB 실패 시 빈 배열
+    }
+  }
+  return mockResources
+    .filter((r) => r.category === resource.category && r.id !== resource.id)
+    .slice(0, 3)
+}
+
 export function generateStaticParams() {
   return mockResources.map((r) => ({ id: r.id }))
 }
@@ -65,5 +93,7 @@ export default async function LearnPage({
   const resource = await getResource(id)
   if (!resource) notFound()
 
-  return <LearnClient resource={resource} />
+  const related = await getRelated(resource)
+
+  return <LearnClient resource={resource} related={related} />
 }
