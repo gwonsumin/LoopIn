@@ -37,7 +37,82 @@ export const CATEGORY_LABEL: Record<string, string> = {
   "design-tool": "디자인 툴",
 }
 
-export function ResourceCard({ resource }: { resource: Resource }) {
+interface Props {
+  resource: Resource
+  view?: "grid" | "list"
+}
+
+export function ResourceCard({ resource, view = "grid" }: Props) {
+  if (view === "list") {
+    return (
+      <Link
+        href={`/resources/${resource.id}`}
+        className="group flex flex-row items-start gap-4 p-4 rounded-2xl border border-neutral-100 bg-white hover:shadow-md transition-all duration-200"
+      >
+        {/* 좌측 썸네일 */}
+        <div className="w-[140px] h-[100px] shrink-0 rounded-xl bg-neutral-100 overflow-hidden flex items-center justify-center">
+          {resource.thumbnail ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={resource.thumbnail}
+              alt={resource.title}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <span className="text-2xl font-bold text-neutral-300">
+              {(TYPE_LABEL[resource.type] ?? resource.type).charAt(0)}
+            </span>
+          )}
+        </div>
+
+        {/* 우측 콘텐츠 */}
+        <div className="flex-1 min-w-0">
+          <span
+            className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${TYPE_BADGE[resource.type]}`}
+          >
+            {TYPE_LABEL[resource.type]}
+          </span>
+          <p className="text-base font-semibold text-neutral-900 line-clamp-1 mt-1">
+            {resource.title}
+          </p>
+          <p className="text-sm text-neutral-500 line-clamp-1 mt-1">
+            {resource.description}
+          </p>
+          <div className="flex gap-1 mt-2">
+            {resource.tags.slice(0, 3).map((tag) => (
+              <span
+                key={tag}
+                className="text-xs px-2 py-0.5 bg-neutral-50 text-neutral-500 rounded-full border border-neutral-100"
+              >
+                #{tag}
+              </span>
+            ))}
+          </div>
+          <div className="flex items-center gap-2 mt-2">
+            <span
+              className={`text-xs px-2 py-0.5 rounded-full font-medium ${LEVEL_BADGE[resource.level]}`}
+            >
+              {LEVEL_LABEL[resource.level]}
+            </span>
+            <span className="text-xs text-neutral-400">
+              · {resource.savedCount.toLocaleString()}명이 저장
+            </span>
+          </div>
+        </div>
+
+        {/* 맨 우측 북마크 */}
+        <button
+          type="button"
+          onClick={(e) => e.preventDefault()}
+          className="w-8 h-8 shrink-0 self-center flex items-center justify-center rounded-lg text-neutral-300 hover:text-primary transition-colors"
+          aria-label="저장하기"
+        >
+          <Bookmark className="w-5 h-5" />
+        </button>
+      </Link>
+    )
+  }
+
   return (
     <Link
       href={`/resources/${resource.id}`}
