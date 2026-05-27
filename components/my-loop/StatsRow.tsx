@@ -2,6 +2,7 @@ import { Bookmark, PlayCircle, GitBranch, Clock } from "lucide-react"
 
 interface Props {
   savedCount: number
+  inProgressCount: number
 }
 
 const STATS = [
@@ -11,7 +12,7 @@ const STATS = [
     iconColor: "text-violet-500",
     label: "저장한 자료",
     sub: "전체 저장 자료",
-    mockValue: null as null,
+    key: "saved" as const,
   },
   {
     icon: PlayCircle,
@@ -19,7 +20,7 @@ const STATS = [
     iconColor: "text-pink-500",
     label: "이어본 자료",
     sub: "이어서 학습 중",
-    mockValue: "35개",
+    key: "inProgress" as const,
   },
   {
     icon: GitBranch,
@@ -27,7 +28,7 @@ const STATS = [
     iconColor: "text-purple-500",
     label: "학습 Flow",
     sub: "생성한 Flow",
-    mockValue: "6개",
+    key: "flow" as const,
   },
   {
     icon: Clock,
@@ -35,28 +36,35 @@ const STATS = [
     iconColor: "text-orange-500",
     label: "총 학습 시간",
     sub: "이번 달 기준",
-    mockValue: "42시간",
+    key: "time" as const,
   },
 ]
 
-export function StatsRow({ savedCount }: Props) {
+const MOCK_VALUES: Record<string, string> = {
+  flow: "6개",
+  time: "42시간",
+}
+
+export function StatsRow({ savedCount, inProgressCount }: Props) {
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-      {STATS.map(({ icon: Icon, iconBg, iconColor, label, sub, mockValue }) => (
-        <div
-          key={label}
-          className="rounded-2xl bg-white border border-neutral-100 p-5"
-        >
-          <div className={`w-11 h-11 rounded-xl flex items-center justify-center ${iconBg}`}>
-            <Icon className={`w-5 h-5 ${iconColor}`} />
+      {STATS.map(({ icon: Icon, iconBg, iconColor, label, sub, key }) => {
+        let value: string
+        if (key === "saved") value = `${savedCount}개`
+        else if (key === "inProgress") value = `${inProgressCount}개`
+        else value = MOCK_VALUES[key]
+
+        return (
+          <div key={label} className="rounded-2xl bg-white border border-neutral-100 p-5">
+            <div className={`w-11 h-11 rounded-xl flex items-center justify-center ${iconBg}`}>
+              <Icon className={`w-5 h-5 ${iconColor}`} />
+            </div>
+            <p className="text-2xl font-bold text-neutral-900 mt-3">{value}</p>
+            <p className="text-xs text-neutral-400 mt-0.5">{sub}</p>
+            <p className="text-sm font-medium text-neutral-600 mt-1">{label}</p>
           </div>
-          <p className="text-2xl font-bold text-neutral-900 mt-3">
-            {mockValue ?? `${savedCount}개`}
-          </p>
-          <p className="text-xs text-neutral-400 mt-0.5">{sub}</p>
-          <p className="text-sm font-medium text-neutral-600 mt-1">{label}</p>
-        </div>
-      ))}
+        )
+      })}
     </div>
   )
 }
