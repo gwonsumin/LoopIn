@@ -1,167 +1,94 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
-import Link from "next/link"
+import { useState } from "react"
+import { useRouter } from "next/navigation"
 import Image from "next/image"
-import { ArrowRight } from "lucide-react"
-import { cn } from "@/lib/utils"
-import { heroSlides } from "./heroSlides"
+import { Search, Bookmark, Play } from "lucide-react"
 
-const AUTO_INTERVAL = 5000
+const SUGGESTED_TAGS = ["Figma Auto Layout", "React 상태관리", "Next.js 입문", "UX 포트폴리오", "ChatGPT 활용법"]
 
 export function HeroSection() {
-  const [activeIndex, setActiveIndex] = useState(0)
-  const [isPaused, setIsPaused] = useState(false)
-  const reducedMotionRef = useRef(false)
+  const [q, setQ] = useState("")
+  const router = useRouter()
 
-  useEffect(() => {
-    const mq = window.matchMedia("(prefers-reduced-motion: reduce)")
-    reducedMotionRef.current = mq.matches
-    const onChange = (e: MediaQueryListEvent) => {
-      reducedMotionRef.current = e.matches
-    }
-    mq.addEventListener("change", onChange)
-    return () => mq.removeEventListener("change", onChange)
-  }, [])
-
-  useEffect(() => {
-    if (isPaused || reducedMotionRef.current) return
-    const id = setInterval(() => {
-      setActiveIndex((i) => (i + 1) % heroSlides.length)
-    }, AUTO_INTERVAL)
-    return () => clearInterval(id)
-  }, [isPaused])
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    const trimmed = q.trim()
+    if (!trimmed) return
+    router.push("/search?q=" + encodeURIComponent(trimmed))
+  }
 
   return (
-    <section
-      role="region"
-      aria-label="추천 학습 흐름"
-      className="relative h-[480px] md:h-[560px] overflow-hidden bg-neutral-50"
-      onMouseEnter={() => setIsPaused(true)}
-      onMouseLeave={() => setIsPaused(false)}
-    >
-      {heroSlides.map((slide, i) => (
-        <div
-          key={slide.flowSlug}
-          aria-hidden={i !== activeIndex}
-          className={cn(
-            "absolute inset-0 transition-opacity duration-700 ease-out",
-            i === activeIndex ? "opacity-100" : "opacity-0 pointer-events-none"
-          )}
-        >
-          {/* 배경 일러스트 */}
-          <Image
-            src={slide.bgImage}
-            alt=""
-            fill
-            priority={i === 0}
-            sizes="100vw"
-            className="object-cover object-right"
-          />
+    <section className="bg-gradient-to-br from-[#F0EEFF] via-white to-white">
+      <div className="min-h-[560px] md:min-h-[600px] max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-12">
+        {/* 좌측 콘텐츠 */}
+        <div className="flex-1 z-10">
+          <h1 className="text-4xl md:text-5xl lg:text-[56px] font-bold text-neutral-900 leading-tight tracking-tight whitespace-pre-line">
+            {"탐색하고, 저장하고,\n다시 "}
+            <span className="text-[#F96A84]">이어가는</span>
+            {" 학습 경험"}
+          </h1>
 
-          {/* 좌측 카피 가독성용 fade */}
-          <div className="absolute inset-0 bg-gradient-to-r from-white/85 via-white/55 to-transparent md:from-white/70 md:via-white/30 md:to-transparent" />
+          <p className="mt-5 text-base md:text-lg text-neutral-500 leading-relaxed">
+            흩어진 디지털 직무 학습 자료를 더 빠르게 발견하고 이어 학습하세요.
+          </p>
 
-          {/* 카피 영역 */}
-          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center">
-            <div className="space-y-5 max-w-lg">
-              {/* 배지 */}
-              <div
-                className={cn(
-                  "inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/90 backdrop-blur border text-xs font-medium",
-                  slide.accentTextClass,
-                  slide.accentBorderClass
-                )}
+          <form onSubmit={handleSubmit} className="mt-8 max-w-2xl flex items-center bg-white rounded-2xl shadow-md border border-neutral-100 px-5 py-4 gap-3">
+            <input
+              value={q}
+              onChange={e => setQ(e.target.value)}
+              placeholder="무엇을 배우고 싶으신가요?"
+              className="flex-1 text-base text-neutral-800 placeholder:text-neutral-400 outline-none bg-transparent"
+            />
+            <button
+              type="submit"
+              className="w-10 h-10 rounded-xl bg-[#7C6FF7] flex items-center justify-center shrink-0 hover:bg-[#6B5FE6] transition-colors"
+            >
+              <Search className="w-5 h-5 text-white" />
+            </button>
+          </form>
+
+          <div className="mt-4 flex items-center gap-2 flex-wrap">
+            <span className="text-xs font-medium text-neutral-400">추천 검색어</span>
+            {SUGGESTED_TAGS.map(tag => (
+              <button
+                key={tag}
+                type="button"
+                onClick={() => router.push("/search?q=" + encodeURIComponent(tag))}
+                className="text-xs px-3 py-1.5 rounded-full bg-white border border-neutral-200 text-neutral-600 hover:border-[#F96A84]/40 hover:text-[#F96A84] transition-colors"
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/icons/sparkle.svg" alt="" width={12} height={12} className="icon-muted" />
-                {slide.badgeText}
-              </div>
-
-              {/* 제목 */}
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight tracking-tight whitespace-pre-line">
-                <span className="text-neutral-900">{slide.titlePrefix}</span>
-                <span className={slide.accentTextClass}>{slide.titleAccent}</span>
-              </h1>
-
-              {/* 설명 */}
-              <p className="text-sm md:text-base text-neutral-700 leading-relaxed whitespace-pre-line">
-                {slide.description}
-              </p>
-
-              {/* 태그 */}
-              <div className="flex flex-wrap gap-2">
-                {slide.tags.map((tag) => (
-                  <Link
-                    key={tag.label}
-                    href={`/search?q=${encodeURIComponent(tag.label)}`}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/90 backdrop-blur border border-neutral-200 text-xs md:text-sm text-neutral-700 hover:border-neutral-400 transition-colors"
-                  >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={tag.icon} alt="" width={14} height={14} className="shrink-0 icon-muted" />
-                    {tag.label}
-                  </Link>
-                ))}
-              </div>
-
-              {/* CTA */}
-              <Link
-                href={`/flows/${slide.flowSlug}`}
-                className={cn(
-                  "inline-flex items-center gap-1.5 px-5 h-11 rounded-full text-white text-sm font-medium shadow-sm transition-colors",
-                  slide.accentBgClass,
-                  slide.accentHoverClass
-                )}
-              >
-                {slide.ctaText}
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </div>
+                {tag}
+              </button>
+            ))}
           </div>
         </div>
-      ))}
 
-      {/* 장식 아이콘 */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src="/icons/hero-star.svg"
-        alt=""
-        width={23}
-        height={22}
-        className="absolute top-10 right-[42%] opacity-70 pointer-events-none hidden md:block icon-muted"
-        aria-hidden
-      />
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src="/icons/hero-lighting.svg"
-        alt=""
-        width={14}
-        height={17}
-        className="absolute bottom-16 right-[38%] opacity-60 pointer-events-none hidden md:block icon-muted"
-        aria-hidden
-      />
+        {/* 우측 일러스트 */}
+        <div className="relative w-[480px] h-[420px] shrink-0 hidden lg:block">
+          <Image
+            src="/images/loopHero.png"
+            alt="LoopIn 학습 루프"
+            fill
+            className="object-contain"
+            priority
+            unoptimized
+          />
 
-      {/* 인디케이터 */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2 z-10">
-        {heroSlides.map((slide, i) => (
-          <button
-            key={slide.flowSlug}
-            type="button"
-            onClick={() => setActiveIndex(i)}
-            aria-label={`${i + 1}번째 슬라이드로 이동`}
-            aria-current={i === activeIndex}
-            className="w-11 h-11 flex items-center justify-center"
-          >
-            <span
-              className={cn(
-                "h-2 rounded-full transition-all duration-300",
-                i === activeIndex
-                  ? "w-8 bg-neutral-900"
-                  : "w-2 bg-neutral-400 hover:bg-neutral-600"
-              )}
-            />
-          </button>
-        ))}
+          {/* 북마크 버블 */}
+          <div className="absolute top-4 right-8 w-12 h-12 rounded-full bg-[#F96A84] flex items-center justify-center shadow-lg">
+            <Bookmark className="w-5 h-5 text-white" />
+          </div>
+
+          {/* 검색 버블 */}
+          <div className="absolute top-1/2 -translate-y-1/2 left-0 w-11 h-11 rounded-full bg-white border border-neutral-100 flex items-center justify-center shadow-md">
+            <Search className="w-4 h-4 text-neutral-400" />
+          </div>
+
+          {/* 플레이 버블 */}
+          <div className="absolute bottom-8 right-0 w-11 h-11 rounded-full bg-white border border-neutral-100 flex items-center justify-center shadow-md">
+            <Play className="w-4 h-4 text-[#7C6FF7] fill-[#7C6FF7]" />
+          </div>
+        </div>
       </div>
     </section>
   )
