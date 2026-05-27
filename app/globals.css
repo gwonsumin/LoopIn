@@ -52,6 +52,25 @@ body {
   filter: brightness(0) saturate(100%) invert(63%) sepia(50%) saturate(450%) hue-rotate(95deg) brightness(95%) contrast(90%);
 }
 
+/* Hero 버블 플로팅 애니메이션 */
+@keyframes float-a {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-12px); }
+}
+@keyframes float-b {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  40%      { transform: translateY(-9px) rotate(2deg); }
+  75%      { transform: translateY(4px) rotate(-1deg); }
+}
+@keyframes float-c {
+  0%, 100% { transform: translateY(0px); }
+  50%      { transform: translateY(-8px); }
+}
+
+.animate-float-a { animation: float-a 3.8s ease-in-out infinite; will-change: transform; }
+.animate-float-b { animation: float-b 4.5s ease-in-out infinite 0.8s; will-change: transform; }
+.animate-float-c { animation: float-c 3.2s ease-in-out infinite 1.5s; will-change: transform; }
+
 /* @deprecated — 신규 컴포넌트는 Tailwind 유틸 직접 사용: rounded-2xl shadow-sm border border-neutral-100 */
 .card {
   border-radius: 1rem;

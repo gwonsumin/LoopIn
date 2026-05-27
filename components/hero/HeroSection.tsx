@@ -74,18 +74,18 @@ export function HeroSection() {
             unoptimized
           />
 
-          {/* 북마크 버블 */}
-          <div className="absolute top-4 right-8 w-12 h-12 rounded-full bg-[#F96A84] flex items-center justify-center shadow-lg">
-            <Bookmark className="w-5 h-5 text-white" />
+          {/* 북마크 버블 — 느린 플로트 */}
+          <div className="animate-float-a absolute top-8 right-14 w-12 h-12 rounded-full bg-[#F96A84] flex items-center justify-center shadow-lg">
+            <Bookmark className="w-5 h-5 text-white fill-white" />
           </div>
 
-          {/* 검색 버블 */}
-          <div className="absolute top-1/2 -translate-y-1/2 left-0 w-11 h-11 rounded-full bg-white border border-neutral-100 flex items-center justify-center shadow-md">
+          {/* 검색 버블 — 중간 속도, 다른 리듬 */}
+          <div className="animate-float-b absolute top-[42%] -translate-y-1/2 -left-2 w-11 h-11 rounded-full bg-white border border-neutral-100 flex items-center justify-center shadow-md">
             <Search className="w-4 h-4 text-neutral-400" />
           </div>
 
-          {/* 플레이 버블 */}
-          <div className="absolute bottom-8 right-0 w-11 h-11 rounded-full bg-white border border-neutral-100 flex items-center justify-center shadow-md">
+          {/* 플레이 버블 — 빠르게, 후행 */}
+          <div className="animate-float-c absolute bottom-14 right-4 w-11 h-11 rounded-full bg-white border border-neutral-100 flex items-center justify-center shadow-md">
             <Play className="w-4 h-4 text-[#7C6FF7] fill-[#7C6FF7]" />
           </div>
         </div>

@@ -28,7 +28,7 @@ export const mockCategories: Category[] = [
   {
     slug: 'productivity',
     name: '생산성 도구',
-    description: 'Notion·앱·시스템 구축',
+    description: 'Notion·협업·시스템 구축',
     resourceCount: 896,
     icon: 'folder',
     accentColor: 'green',
