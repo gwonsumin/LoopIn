@@ -47,7 +47,6 @@ const NAV_ITEMS: NavItem[] = [
       { label: "UX Portfolio", href: "/flows/ux-portfolio" },
       { label: "Frontend Starter", href: "/flows/frontend-starter" },
       { label: "AI Productivity", href: "/flows/ai-productivity" },
-      { label: "Data Analysis", href: "/flows/data-analysis" },
       { label: "모든 Flow 보기 →", href: "/flows", isPrimary: true },
     ],
   },
