@@ -5,6 +5,9 @@ import Link from "next/link"
 import { useSession } from "next-auth/react"
 import { useQuery } from "@tanstack/react-query"
 import { ResourceCard } from "@/components/search/ResourceCard"
+import { StatsRow } from "@/components/my-loop/StatsRow"
+import { ContinuingSection } from "@/components/my-loop/ContinuingSection"
+import { MyFlowsSection } from "@/components/my-loop/MyFlowsSection"
 import type { Resource } from "@/lib/types"
 
 const CATEGORY_TABS = [
@@ -181,14 +184,13 @@ export default function MyLoopPage() {
 
   return (
     <div className="bg-neutral-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <div className="mb-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+        {/* 헤더 */}
+        <div>
           <h1 className="text-2xl font-bold text-neutral-900">My Loop</h1>
-          {status === "authenticated" && !isLoading && resources.length > 0 && (
-            <p className="text-sm text-neutral-500 mt-1">
-              {resources.length}개의 자료를 저장했어요
-            </p>
-          )}
+          <p className="text-sm text-neutral-500 mt-1">
+            저장한 자료들을 다시 탐색하고, 학습을 이어가세요.
+          </p>
         </div>
 
         {isLoading ? (
@@ -196,7 +198,19 @@ export default function MyLoopPage() {
         ) : status === "unauthenticated" ? (
           <LoginPrompt />
         ) : (
-          <ResourceGrid resources={resources} />
+          <>
+            <StatsRow savedCount={resources.length} />
+            <ContinuingSection />
+            <MyFlowsSection />
+
+            {/* 최근 저장한 자료 */}
+            <section>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-bold text-neutral-900">최근 저장한 자료</h2>
+              </div>
+              <ResourceGrid resources={resources} />
+            </section>
+          </>
         )}
       </div>
     </div>

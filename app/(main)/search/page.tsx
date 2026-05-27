@@ -164,6 +164,7 @@ function SearchContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [view, setView] = useState<"grid" | "list">("list")
 
   const q        = searchParams.get("q") ?? ""
   const category = searchParams.get("category") ?? ""
@@ -310,11 +311,13 @@ function SearchContent() {
             total={total}
             sort={sort}
             onSortChange={(v) => updateParams({ sort: v })}
+            view={view}
+            onViewChange={setView}
           />
 
           {/* 결과 or 빈 상태 */}
           {isLoading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+            <div className={view === "grid" ? "grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4" : "flex flex-col divide-y divide-neutral-100"}>
               {Array.from({ length: PAGE_SIZE }).map((_, i) => (
                 <div key={i} className="rounded-2xl border border-neutral-100 bg-white p-5 h-52 animate-pulse" />
               ))}
@@ -323,9 +326,9 @@ function SearchContent() {
             <EmptyState q={q} onReset={handleReset} />
           ) : (
             <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+              <div className={view === "grid" ? "grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4" : "flex flex-col divide-y divide-neutral-100"}>
                 {paginated.map((r) => (
-                  <ResourceCard key={r.id} resource={r} />
+                  <ResourceCard key={r.id} resource={r} view={view} />
                 ))}
               </div>
               {totalPages > 1 && (
