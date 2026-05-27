@@ -220,7 +220,7 @@ export default function FlowCard({ flow }: Props) {
             <div className="mt-auto pt-4">
               <button
                 type="button"
-                onClick={() => router.push(flow.ctaLink)}
+                onClick={() => router.push(`/flows/${flow.slug}`)}
                 className={`w-full rounded-xl py-3 text-sm font-bold text-white transition-colors ${t.ctaBg}`}
               >
                 Flow 시작하기 →
