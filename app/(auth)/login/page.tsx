@@ -10,7 +10,7 @@ function LoginContent() {
   const searchParams = useSearchParams()
 
   function handleGoogleSignIn() {
-    const callbackUrl = searchParams.get('callbackUrl') || '/'
+    const callbackUrl = '/'
     signIn('google', { callbackUrl })
   }
 

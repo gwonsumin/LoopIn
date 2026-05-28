@@ -1,9 +1,12 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import type { Flow } from "@/lib/types"
+
+type StepStatus = "done" | "current" | "pending"
+interface CardStep { label: string; status: StepStatus }
 
 const THEME = {
   pink: {
@@ -54,6 +57,21 @@ export default function FlowCard({ flow }: Props) {
   const router = useRouter()
   const [flipped, setFlipped] = useState(false)
   const t = THEME[flow.theme]
+  const [displaySteps, setDisplaySteps] = useState<CardStep[]>(flow.cardSteps)
+
+  useEffect(() => {
+    let passedCurrent = false
+    const computed: CardStep[] = flow.steps.map((step, i) => {
+      const label = flow.cardSteps[i]?.label ?? step.title
+      const raw = localStorage.getItem(`loopin-progress-${step.resourceId}`)
+      let progress: { status?: string } | null = null
+      try { if (raw) progress = JSON.parse(raw) } catch {}
+      if (progress?.status === "completed") return { label, status: "done" }
+      if (!passedCurrent) { passedCurrent = true; return { label, status: "current" } }
+      return { label, status: "pending" }
+    })
+    setDisplaySteps(computed)
+  }, [flow.steps, flow.cardSteps])
 
   return (
     <div style={{ perspective: "1000px" }} className="min-h-[640px] flex flex-col">
@@ -100,10 +118,10 @@ export default function FlowCard({ flow }: Props) {
           </p>
 
           {/* 스텝 진행 */}
-          <div className="flex items-start gap-1 mb-5">
-            {flow.cardSteps.map((step, i) => (
-              <div key={step.label} className="flex items-center gap-1">
-                <div className="flex flex-col items-center gap-1">
+          <div className="flex items-start w-full mb-5">
+            {displaySteps.map((step, i) => (
+              <div key={step.label} className="flex items-center flex-1 min-w-0">
+                <div className="flex-1 flex flex-col items-center gap-1.5">
                   {step.status === "done" ? (
                     <div className={`w-9 h-9 rounded-full ${t.stepDone} flex items-center justify-center shrink-0`}>
                       {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -118,11 +136,11 @@ export default function FlowCard({ flow }: Props) {
                       {i + 1}
                     </div>
                   )}
-                  <span className={`text-xs mt-1 text-center whitespace-nowrap ${step.status === "current" ? "font-bold text-neutral-800" : "text-neutral-400"}`}>
+                  <span className={`text-[11px] text-center leading-tight px-0.5 truncate max-w-full ${step.status === "current" ? "font-bold text-neutral-800" : step.status === "done" ? "text-neutral-500" : "text-neutral-300"}`}>
                     {step.label}
                   </span>
                 </div>
-                {i < flow.cardSteps.length - 1 && (
+                {i < displaySteps.length - 1 && (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src="/icons/arrow.svg" alt="" width={12} height={12} className="mb-5 opacity-30 shrink-0" />
                 )}
@@ -130,32 +148,32 @@ export default function FlowCard({ flow }: Props) {
             ))}
           </div>
 
-          {/* 메타 행 */}
-          <div className="flex flex-row gap-2 mb-0 pt-4 border-t border-neutral-100">
-            <span className="inline-flex items-center gap-1 border border-neutral-200 rounded-lg px-2 py-1.5 whitespace-nowrap text-xs text-neutral-700">
-              {flow.displayLevel}
-              <span className={`w-1.5 h-1.5 rounded-full ${flow.levelColor === "green" ? "bg-emerald-400" : "bg-yellow-400"}`} />
-            </span>
-            <span className="inline-flex items-center gap-1 border border-neutral-200 rounded-lg px-2 py-1.5 whitespace-nowrap text-xs text-neutral-700">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/icons/file.svg" alt="" width={13} height={13} className="icon-muted" />
-              {flow.totalResources}개 자료
-            </span>
-            <span className="inline-flex items-center gap-1 border border-neutral-200 rounded-lg px-2 py-1.5 whitespace-nowrap text-xs text-neutral-700">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/icons/clock.svg" alt="" width={13} height={13} className="icon-muted" />
-              {flow.estimatedTime}
-            </span>
+          {/* 메타 + CTA — 하단 고정 */}
+          <div className="mt-auto pt-4 border-t border-neutral-100 flex flex-col gap-3">
+            <div className="flex flex-row gap-2">
+              <span className="inline-flex items-center gap-1 border border-neutral-200 rounded-lg px-2 py-1.5 whitespace-nowrap text-xs text-neutral-700">
+                {flow.displayLevel}
+                <span className={`w-1.5 h-1.5 rounded-full ${flow.levelColor === "green" ? "bg-emerald-400" : "bg-yellow-400"}`} />
+              </span>
+              <span className="inline-flex items-center gap-1 border border-neutral-200 rounded-lg px-2 py-1.5 whitespace-nowrap text-xs text-neutral-700">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/icons/file.svg" alt="" width={13} height={13} className="icon-muted" />
+                {flow.totalResources}개 자료
+              </span>
+              <span className="inline-flex items-center gap-1 border border-neutral-200 rounded-lg px-2 py-1.5 whitespace-nowrap text-xs text-neutral-700">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/icons/clock.svg" alt="" width={13} height={13} className="icon-muted" />
+                {flow.estimatedTime}
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setFlipped(true)}
+              className={`w-full rounded-xl py-3 text-sm font-medium transition-colors ${t.btn}`}
+            >
+              자세히 보기 →
+            </button>
           </div>
-
-          {/* CTA */}
-          <button
-            type="button"
-            onClick={() => setFlipped(true)}
-            className={`mt-auto w-full rounded-xl py-3 text-sm font-medium transition-colors ${t.btn}`}
-          >
-            자세히 보기 →
-          </button>
         </div>
 
         {/* ─── 뒷면 ──────────────────────────────────────────────── */}
