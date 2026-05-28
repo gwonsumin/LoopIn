@@ -1,4 +1,5 @@
 import Link from "next/link"
+import Image from "next/image"
 
 const NAV_LINKS = [
   { label: "홈", href: "/" },
@@ -51,8 +52,14 @@ export function Footer() {
 
           {/* 열 1: 브랜드 */}
           <div>
-            <Link href="/" className="text-xl font-bold text-[#F96A84]">
-              LoopIn
+            <Link href="/" className="inline-block">
+              <Image
+                src="/images/logo-wordmark.svg"
+                alt="LoopIn"
+                width={88}
+                height={30}
+                className="h-7 w-auto"
+              />
             </Link>
             <p className="text-sm text-neutral-500 mt-2 max-w-[200px] leading-relaxed">
               디지털 직무 학습자를 위한 탐색 중심 EduTech 플랫폼

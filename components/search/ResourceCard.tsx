@@ -1,7 +1,11 @@
+'use client'
+
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Bookmark } from "lucide-react"
 import type { Resource } from "@/lib/types"
 import { ProgressBadge } from "./ProgressBadge"
+import { isSaved, toggleSaved } from "@/lib/utils/loop-storage"
 
 const TYPE_BADGE: Record<string, string> = {
   article:  "bg-blue-50 text-blue-700",
@@ -43,6 +47,16 @@ interface Props {
 }
 
 export function ResourceCard({ resource, view = "grid" }: Props) {
+  const [saved, setSaved] = useState(false)
+  useEffect(() => { setSaved(isSaved(resource.id)) }, [resource.id])
+
+  function handleSave(e: React.MouseEvent) {
+    e.preventDefault()
+    const next = toggleSaved(resource.id)
+    setSaved(next)
+    window.dispatchEvent(new CustomEvent("loopin-loop-updated"))
+  }
+
   if (view === "list") {
     return (
       <Link
@@ -103,11 +117,13 @@ export function ResourceCard({ resource, view = "grid" }: Props) {
         {/* 맨 우측 북마크 */}
         <button
           type="button"
-          onClick={(e) => e.preventDefault()}
-          className="w-8 h-8 shrink-0 self-center flex items-center justify-center rounded-lg text-neutral-300 hover:text-primary transition-colors"
+          onClick={handleSave}
+          className={`w-8 h-8 shrink-0 self-center flex items-center justify-center rounded-lg hover:text-primary transition-colors ${
+            saved ? "text-primary" : "text-neutral-300"
+          }`}
           aria-label="저장하기"
         >
-          <Bookmark className="w-5 h-5" />
+          <Bookmark className="w-5 h-5" fill={saved ? "currentColor" : "none"} />
         </button>
       </Link>
     )

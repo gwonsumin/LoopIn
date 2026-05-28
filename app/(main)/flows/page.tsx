@@ -4,7 +4,7 @@ import { Clock, FileText } from "lucide-react"
 import { mockFlows } from "@/lib/mock/flows"
 
 export const metadata: Metadata = {
-  title: "Learning Flows — LoopIn",
+  title: "Learning Flows | LoopIn",
   description: "단계별로 설계된 학습 흐름을 탐색해보세요.",
 }
 
@@ -26,10 +26,8 @@ const THEME_BAR: Record<string, string> = {
 
 export default function FlowsPage() {
   return (
-    <div className="bg-neutral-50 min-h-screen">
+    <main className="bg-neutral-50 min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-
-        {/* 헤더 */}
         <div className="mb-8">
           <h1 className="text-2xl font-bold text-neutral-900">Learning Flows</h1>
           <p className="text-sm text-neutral-500 mt-1">
@@ -37,15 +35,13 @@ export default function FlowsPage() {
           </p>
         </div>
 
-        {/* Flow 카드 그리드 */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {mockFlows.map((flow) => (
             <Link
               key={flow.slug}
               href={`/flows/${flow.slug}`}
               className="group rounded-2xl bg-white border border-neutral-100 shadow-sm p-6 flex flex-col gap-4 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200"
             >
-              {/* 배지 + 레벨 */}
               <div className="flex items-center justify-between">
                 <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${THEME_BADGE[flow.theme]}`}>
                   {flow.categoryLabel}
@@ -55,8 +51,7 @@ export default function FlowsPage() {
                 </span>
               </div>
 
-              {/* 제목 + 설명 */}
-              <div>
+              <div className="flex-1">
                 <h2 className="text-base font-bold text-neutral-900 group-hover:text-primary transition-colors leading-snug">
                   {flow.title}
                 </h2>
@@ -65,10 +60,9 @@ export default function FlowsPage() {
                 </p>
               </div>
 
-              {/* 스텝 프로그레스 바 */}
               <div className="flex gap-1.5">
                 {flow.cardSteps.map((step) => (
-                  <div key={step.label} className="flex-1 flex flex-col gap-1">
+                  <div key={step.label} className="flex-1 flex flex-col gap-1 min-w-0">
                     <div className={`h-1.5 rounded-full ${
                       step.status === "done" ? THEME_BAR[flow.theme] :
                       step.status === "current" ? `${THEME_BAR[flow.theme]} opacity-40` :
@@ -79,7 +73,6 @@ export default function FlowsPage() {
                 ))}
               </div>
 
-              {/* 메타 */}
               <div className="flex items-center justify-between pt-3 border-t border-neutral-100">
                 <div className="flex items-center gap-4 text-xs text-neutral-400">
                   <span className="flex items-center gap-1">
@@ -99,6 +92,6 @@ export default function FlowsPage() {
           ))}
         </div>
       </div>
-    </div>
+    </main>
   )
 }

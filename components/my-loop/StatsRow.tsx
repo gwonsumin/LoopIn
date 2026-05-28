@@ -3,6 +3,7 @@ import { Bookmark, PlayCircle, GitBranch, Clock } from "lucide-react"
 interface Props {
   savedCount: number
   inProgressCount: number
+  flowCount: number
 }
 
 const STATS = [
@@ -45,13 +46,14 @@ const MOCK_VALUES: Record<string, string> = {
   time: "42시간",
 }
 
-export function StatsRow({ savedCount, inProgressCount }: Props) {
+export function StatsRow({ savedCount, inProgressCount, flowCount }: Props) {
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
       {STATS.map(({ icon: Icon, iconBg, iconColor, label, sub, key }) => {
         let value: string
         if (key === "saved") value = `${savedCount}개`
         else if (key === "inProgress") value = `${inProgressCount}개`
+        else if (key === "flow") value = `${flowCount}개`
         else value = MOCK_VALUES[key]
 
         return (

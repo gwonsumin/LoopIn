@@ -169,7 +169,7 @@ export default async function ResourceDetailPage({
   )
 
   return (
-    <div className="bg-neutral-50">
+    <div className="min-h-screen bg-neutral-50">
       <div className="max-w-5xl mx-auto px-6 py-8">
 
         {/* 브레드크럼 */}
@@ -184,10 +184,10 @@ export default async function ResourceDetailPage({
         </Link>
 
         {/* 2컬럼 그리드 */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-6">
 
           {/* 좌측 — 본문 */}
-          <div className="md:col-span-2 space-y-6">
+          <div className="lg:col-span-2 space-y-6">
 
             {/* 배지 + 제목 */}
             <div>
@@ -279,7 +279,7 @@ export default async function ResourceDetailPage({
           </div>
 
           {/* 우측 — 메타 + 액션 */}
-          <div className="md:col-span-1">
+          <div className="lg:col-span-1">
             <div className="sticky top-24 space-y-3">
 
               {/* 메타 정보 카드 */}

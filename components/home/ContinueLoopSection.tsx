@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation"
 import { ArrowRight } from "lucide-react"
 import { cn } from "@/lib/utils"
 import type { Resource } from "@/lib/types"
+import { mockFlows } from "@/lib/mock/flows"
 
 interface ProgressData {
   status: 'not_started' | 'started' | 'completed'
@@ -178,10 +179,33 @@ export default function ContinueLoopSection({ resources }: Props) {
 
   if (resources.length === 0) return null
 
-  const started = resources.filter(r => (progressMap[r.id]?.percent ?? 0) > 0)
-  const avgPercent = started.length
-    ? Math.round(started.reduce((s, r) => s + (progressMap[r.id]?.percent ?? 0), 0) / started.length)
-    : 0
+  // 실제 진행 중인 플로우 탐색 (가장 최근에 진행된 플로우 우선)
+  const activeFlow = (() => {
+    let best = mockFlows[0]
+    let bestUpdated = ''
+    for (const flow of mockFlows) {
+      for (const step of flow.steps) {
+        const updatedAt = progressMap[step.resourceId]?.updatedAt ?? ''
+        if (updatedAt > bestUpdated) { bestUpdated = updatedAt; best = flow }
+      }
+    }
+    return best
+  })()
+
+  // 현재 스텝 인덱스 (completed 이후 첫 미완료)
+  const activeStepIndex = (() => {
+    let idx = 0
+    for (let i = 0; i < activeFlow.steps.length; i++) {
+      if (progressMap[activeFlow.steps[i].resourceId]?.status === 'completed') idx = i + 1
+      else break
+    }
+    return Math.min(idx, activeFlow.steps.length - 1)
+  })()
+
+  // 도넛 차트: 활성 플로우 기준 평균 진행률
+  const avgPercent = Math.round(
+    activeFlow.steps.reduce((sum, s) => sum + (progressMap[s.resourceId]?.percent ?? 0), 0) / activeFlow.steps.length
+  )
 
   const nextResources = [...resources]
     .sort((a, b) => {
@@ -193,10 +217,10 @@ export default function ContinueLoopSection({ resources }: Props) {
     })
     .slice(0, 3)
 
-  const flowTitle = "UX Portfolio Flow"
-  const description = "실무에서 필요로 하는 포트폴리오를 단계적으로 완성해보세요."
-  const steps = ["리서치", "케이스스터디", "UX Writing", "프로토타이핑", "포트폴리오 구성"]
-  const currentStep = 2
+  const flowTitle = activeFlow.title
+  const description = activeFlow.description
+  const steps = activeFlow.steps.map(s => s.title)
+  const currentStep = activeStepIndex
 
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
@@ -221,23 +245,29 @@ export default function ContinueLoopSection({ resources }: Props) {
       <div className="rounded-2xl bg-white border border-neutral-100 shadow-sm overflow-hidden">
         <div className="flex flex-col lg:flex-row">
 
-          {/* ── Left panel: Donut chart ─────────────────────────── */}
-          <div className="flex flex-col items-center justify-center gap-4 px-8 py-8 lg:py-10 lg:w-56 lg:shrink-0 bg-neutral-50/60 border-b lg:border-b-0 lg:border-r border-neutral-100">
-            <DonutChart percent={avgPercent} />
-            <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide">
-              학습 진행률
-            </p>
-          </div>
+          {/* ── Left + Center: 클릭 시 플로우 상세 이동 ─────────── */}
+          <Link
+            href={`/flows/${activeFlow.slug}`}
+            className="flex flex-col lg:flex-row lg:flex-1 hover:bg-neutral-50/40 transition-colors"
+          >
+            {/* Left panel: Donut chart */}
+            <div className="flex flex-col items-center justify-center gap-4 px-8 py-8 lg:py-10 lg:w-56 lg:shrink-0 bg-neutral-50/60 border-b lg:border-b-0 lg:border-r border-neutral-100">
+              <DonutChart percent={avgPercent} />
+              <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wide">
+                학습 진행률
+              </p>
+            </div>
 
-          {/* ── Center panel: Flow info + Steps ─────────────────── */}
-          <div className="flex flex-col justify-center px-6 py-8 lg:flex-1 border-b lg:border-b-0 lg:border-r border-neutral-100">
-            <span className="self-start inline-block px-3 py-1 rounded-full bg-[#F96A84]/10 text-[#F96A84] text-xs font-medium mb-3">
-              진행중인 플로우
-            </span>
-            <h3 className="text-lg font-bold text-neutral-900 mb-1 leading-snug">{flowTitle}</h3>
-            <p className="text-sm text-neutral-500 mb-6 leading-relaxed break-keep">{description}</p>
-            <StepProgress steps={steps} currentStep={currentStep} />
-          </div>
+            {/* Center panel: Flow info + Steps */}
+            <div className="flex flex-col justify-center px-6 py-8 lg:flex-1 border-b lg:border-b-0 lg:border-r border-neutral-100">
+              <span className="self-start inline-block px-3 py-1 rounded-full bg-[#F96A84]/10 text-[#F96A84] text-xs font-medium mb-3">
+                진행중인 플로우
+              </span>
+              <h3 className="text-lg font-bold text-neutral-900 mb-1 leading-snug">{flowTitle}</h3>
+              <p className="text-sm text-neutral-500 mb-6 leading-relaxed break-keep">{description}</p>
+              <StepProgress steps={steps} currentStep={currentStep} />
+            </div>
+          </Link>
 
           {/* ── Right panel: Next resources ─────────────────────── */}
           <div className="flex flex-col px-6 py-8 lg:w-[380px] lg:shrink-0">

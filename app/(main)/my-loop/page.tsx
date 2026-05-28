@@ -8,6 +8,7 @@ import { ResourceCard } from "@/components/search/ResourceCard"
 import { StatsRow } from "@/components/my-loop/StatsRow"
 import { ContinuingSection } from "@/components/my-loop/ContinuingSection"
 import { MyFlowsSection } from "@/components/my-loop/MyFlowsSection"
+import { LearningHistory } from "@/components/my-loop/LearningHistory"
 import type { Resource } from "@/lib/types"
 
 const CATEGORY_TABS = [
@@ -171,6 +172,7 @@ function ResourceGrid({ resources }: { resources: Resource[] }) {
 export default function MyLoopPage() {
   const { status } = useSession()
   const [inProgressCount, setInProgressCount] = useState(0)
+  const [flowCount, setFlowCount] = useState(0)
 
   const { data: apiData, isLoading: apiLoading } = useQuery({
     queryKey: ["loops"],
@@ -182,6 +184,13 @@ export default function MyLoopPage() {
 
   const resources = apiData?.data ?? []
   const isLoading = status === "loading" || (status === "authenticated" && apiLoading)
+
+  useEffect(() => {
+    const raw = localStorage.getItem("loopin-my-flows")
+    if (raw) {
+      try { setFlowCount(JSON.parse(raw).length) } catch {}
+    }
+  }, [])
 
   useEffect(() => {
     if (resources.length === 0) return
@@ -217,9 +226,10 @@ export default function MyLoopPage() {
           <LoginPrompt />
         ) : (
           <>
-            <StatsRow savedCount={resources.length} inProgressCount={inProgressCount} />
+            <StatsRow savedCount={resources.length} inProgressCount={inProgressCount} flowCount={flowCount} />
             <ContinuingSection resources={resources} />
             <MyFlowsSection resources={resources} />
+            <LearningHistory resources={resources} />
 
             {/* 최근 저장한 자료 */}
             <section>
