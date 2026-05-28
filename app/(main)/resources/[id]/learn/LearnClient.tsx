@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import type { Resource } from "@/lib/types"
 import { mockFlows } from "@/lib/mock/flows"
@@ -52,6 +52,8 @@ const LEVEL_LABEL: Record<string, string> = {
 export function LearnClient({ resource, related }: { resource: Resource; related: Resource[] }) {
   const storageKey = `loopin-progress-${resource.id}`
   const relatedFlow = mockFlows.find(f => f.steps.some(s => s.resourceId === resource.id))
+
+  const completedRef = useRef<HTMLDivElement>(null)
 
   const [status, setStatus] = useState<ProgressStatus>('not_started')
   const [percent, setPercent] = useState(0)
@@ -128,6 +130,9 @@ export function LearnClient({ resource, related }: { resource: Resource; related
     localStorage.setItem(storageKey, JSON.stringify(data))
     setStatus('completed')
     setPercent(100)
+    setTimeout(() => {
+      completedRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }, 100)
   }
 
   const displayPercent = status === 'completed' ? 100 : percent
@@ -182,6 +187,18 @@ export function LearnClient({ resource, related }: { resource: Resource; related
       {/* Body */}
       <div className="pt-24 sm:pt-16 max-w-4xl mx-auto px-4 py-8 space-y-8">
 
+        {/* Flow 컨텍스트 배너 */}
+        {currentFlowTitle && (
+          <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/5 border border-white/10 w-fit">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary shrink-0" aria-hidden="true">
+              <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+            </svg>
+            <span className="text-xs text-neutral-400">
+              <span className="text-primary font-medium">{currentFlowTitle}</span> Flow에서 학습 중
+            </span>
+          </div>
+        )}
+
         {/* 자료 메타 */}
         <div>
           <div className="flex items-center gap-2 mb-3">
@@ -221,7 +238,7 @@ export function LearnClient({ resource, related }: { resource: Resource; related
 
         {/* 완료 패널 */}
         {status === 'completed' && (
-          <div className="rounded-2xl bg-white/5 border border-white/10 p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div ref={completedRef} className="rounded-2xl bg-white/5 border border-white/10 p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
               <p className="text-sm font-semibold text-white">학습을 완료했어요</p>
               {(currentFlowTitle ?? relatedFlow?.title) && (

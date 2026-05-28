@@ -1,9 +1,10 @@
-import { Bookmark, PlayCircle, GitBranch, Clock } from "lucide-react"
+import { Bookmark, PlayCircle, GitBranch, CheckCircle2 } from "lucide-react"
 
 interface Props {
   savedCount: number
   inProgressCount: number
   flowCount: number
+  completedCount: number
 }
 
 const STATS = [
@@ -32,21 +33,20 @@ const STATS = [
     key: "flow" as const,
   },
   {
-    icon: Clock,
-    iconBg: "bg-orange-100",
-    iconColor: "text-orange-500",
-    label: "총 학습 시간",
-    sub: "이번 달 기준",
-    key: "time" as const,
+    icon: CheckCircle2,
+    iconBg: "bg-emerald-100",
+    iconColor: "text-emerald-500",
+    label: "완료한 자료",
+    sub: "학습 완료",
+    key: "completed" as const,
   },
 ]
 
 const MOCK_VALUES: Record<string, string> = {
   flow: "6개",
-  time: "42시간",
 }
 
-export function StatsRow({ savedCount, inProgressCount, flowCount }: Props) {
+export function StatsRow({ savedCount, inProgressCount, flowCount, completedCount }: Props) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       {STATS.map(({ icon: Icon, iconBg, iconColor, label, sub, key }) => {
@@ -54,6 +54,7 @@ export function StatsRow({ savedCount, inProgressCount, flowCount }: Props) {
         if (key === "saved") value = `${savedCount}개`
         else if (key === "inProgress") value = `${inProgressCount}개`
         else if (key === "flow") value = `${flowCount}개`
+        else if (key === "completed") value = `${completedCount}개`
         else value = MOCK_VALUES[key]
 
         return (

@@ -34,7 +34,25 @@ export function LearningHistory({ resources }: { resources: Resource[] }) {
     setHistory(items)
   }, [resources])
 
-  if (history.length === 0) return null
+  if (history.length === 0) {
+    return (
+      <section id="learning-history">
+        <h2 className="text-lg font-bold text-neutral-900 mb-4">학습 히스토리</h2>
+        <div className="bg-white rounded-2xl border border-neutral-100 px-6 py-10 text-center">
+          <p className="text-sm font-medium text-neutral-500">아직 학습 기록이 없어요</p>
+          <p className="text-xs text-neutral-400 mt-1 mb-4">
+            자료 상세 페이지에서 학습을 시작하면 여기에 기록이 쌓여요.
+          </p>
+          <Link
+            href="/search"
+            className="inline-flex min-h-10 items-center px-4 py-2 rounded-full bg-neutral-100 hover:bg-neutral-200 text-neutral-600 text-sm font-medium transition-colors"
+          >
+            자료 탐색하러 가기
+          </Link>
+        </div>
+      </section>
+    )
+  }
 
   function formatDate(iso: string) {
     const d = new Date(iso)
@@ -46,7 +64,7 @@ export function LearningHistory({ resources }: { resources: Resource[] }) {
   }
 
   return (
-    <section>
+    <section id="learning-history">
       <h2 className="text-lg font-bold text-neutral-900 mb-4">학습 히스토리</h2>
       <div className="bg-white rounded-2xl border border-neutral-100 divide-y divide-neutral-100">
         {history.map(item => (

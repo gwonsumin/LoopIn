@@ -1,6 +1,8 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import Link from "next/link"
+import { Search } from "lucide-react"
 import { useSession } from "next-auth/react"
 import { useQuery } from "@tanstack/react-query"
 import { ResourceCard } from "@/components/search/ResourceCard"
@@ -117,8 +119,9 @@ function ResourceGrid({ resources }: { resources: Resource[] }) {
 }
 
 export default function MyLoopPage() {
-  const { status } = useSession()
+  const { data: session, status } = useSession()
   const [inProgressCount, setInProgressCount] = useState(0)
+  const [completedCount, setCompletedCount] = useState(0)
   const [flowCount, setFlowCount] = useState(0)
 
   const { data: apiData, isLoading: apiLoading, isError, refetch } = useQuery({
@@ -142,29 +145,37 @@ export default function MyLoopPage() {
   useEffect(() => {
     if (resources.length === 0) return
     let count = 0
+    let completed = 0
     for (const r of resources) {
       const raw = localStorage.getItem(`loopin-progress-${r.id}`)
       if (raw) {
         try {
           const data = JSON.parse(raw)
           if (data.status === "started") count++
-        } catch {
-          // ignore
-        }
+          if (data.status === "completed") completed++
+        } catch {}
       }
     }
     setInProgressCount(count)
+    setCompletedCount(completed)
   }, [resources])
 
   return (
     <div className="bg-neutral-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
         {/* 헤더 */}
-        <div>
-          <h1 className="text-2xl font-bold text-neutral-900">My Loop</h1>
-          <p className="text-sm text-neutral-500 mt-1">
-            저장한 자료들을 다시 탐색하고, 학습을 이어가세요.
-          </p>
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2">
+          <div>
+            <h1 className="text-2xl font-bold text-neutral-900">My Loop</h1>
+            <p className="text-sm text-neutral-500 mt-1">
+              {session?.user?.name ? `${session.user.name.split(' ')[0]}님의 ` : ''}학습 아카이브 —
+              탐색하고 저장한 자료를 이어서 학습하세요.
+            </p>
+          </div>
+          <Link href="/search" className="inline-flex min-h-10 items-center gap-1.5 px-4 py-2 rounded-full bg-primary text-white text-sm font-medium hover:opacity-90 transition-opacity shrink-0">
+            <Search className="w-3.5 h-3.5" />
+            자료 탐색하기
+          </Link>
         </div>
 
         {isLoading ? (
@@ -179,7 +190,7 @@ export default function MyLoopPage() {
           <LoginPrompt />
         ) : (
           <>
-            <StatsRow savedCount={resources.length} inProgressCount={inProgressCount} flowCount={flowCount} />
+            <StatsRow savedCount={resources.length} inProgressCount={inProgressCount} flowCount={flowCount} completedCount={completedCount} />
             <ContinuingSection resources={resources} />
             <MyFlowsSection resources={resources} />
             <LearningHistory resources={resources} />

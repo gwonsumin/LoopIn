@@ -144,10 +144,10 @@ export function ContinuingSection({ resources }: { resources: Resource[] }) {
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-bold text-neutral-900">이어 학습 중</h2>
         <Link
-          href="/my-loop/continuing"
+          href="#learning-history"
           className="inline-flex min-h-11 items-center text-sm text-neutral-400 hover:text-primary transition-colors"
         >
-          전체 보기 &gt;
+          히스토리 보기 &gt;
         </Link>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

@@ -286,7 +286,7 @@ export function Header() {
                 <Menu className="h-5 w-5 text-neutral-700" />
               </SheetTrigger>
 
-              <SheetContent side="left" className="w-72 p-0 flex flex-col">
+              <SheetContent side="left" className="w-72 p-0 flex flex-col bg-white" showCloseButton={false}>
                 {/* 모바일 시트 헤더 */}
                 <div className="flex items-center justify-between px-5 h-16 border-b border-neutral-100 shrink-0">
                   <SheetTitle className="sr-only">메뉴</SheetTitle>

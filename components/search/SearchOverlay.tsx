@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
+import { ArrowLeft } from "lucide-react"
 
 const SUGGESTIONS = [
   { id: "1", title: "UX 포트폴리오", sub: "포트폴리오 흐름",  icon: "/icons/folder.svg"  },
@@ -91,6 +92,18 @@ export default function SearchOverlay({ isOpen, onClose }: Props) {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="h-full overflow-y-auto bg-white p-5 shadow-2xl sm:h-auto sm:rounded-3xl sm:p-8">
+
+          {/* 모바일 전용 뒤로가기 */}
+          <div className="flex items-center mb-6 sm:hidden">
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex items-center gap-1.5 min-h-11 pr-3 text-sm text-neutral-500 hover:text-neutral-800 transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              뒤로
+            </button>
+          </div>
 
           {/* 타이틀 */}
           <h2 className="text-2xl font-bold text-neutral-900 mb-6">
