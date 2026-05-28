@@ -9,6 +9,7 @@ import LearningFlowsSection from "@/components/home/LearningFlowsSection"
 import ExploreSection from "@/components/home/ExploreSection"
 import WhyLoopInSection from "@/components/home/WhyLoopInSection"
 import NewsletterSection from "@/components/home/NewsletterSection"
+import RevealSection from "@/components/home/RevealSection"
 import { mockFlows } from "@/lib/mock/flows"
 import { mockCategories } from "@/lib/mock/categories"
 
@@ -19,7 +20,6 @@ async function getRecentSaved(email: string): Promise<Resource[]> {
     const user = await User.findOne({ email }).lean() as any
     if (!user) return []
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const loops = await Loop.find({ userId: user._id })
       .sort({ createdAt: -1 })
       .limit(3)
@@ -59,12 +59,20 @@ export default async function HomePage() {
 
   return (
     <>
-      <HeroSection />
-      {recentSaved.length > 0 && <ContinueLoopSection resources={recentSaved} />}
+      <RevealSection delay={0}>
+        <HeroSection />
+      </RevealSection>
+      {recentSaved.length > 0 && (
+        <RevealSection delay={0}>
+          <ContinueLoopSection resources={recentSaved} />
+        </RevealSection>
+      )}
       <LearningFlowsSection flows={mockFlows} />
       <ExploreSection categories={mockCategories} />
       <WhyLoopInSection />
-      <NewsletterSection />
+      <RevealSection delay={0}>
+        <NewsletterSection />
+      </RevealSection>
     </>
   )
 }

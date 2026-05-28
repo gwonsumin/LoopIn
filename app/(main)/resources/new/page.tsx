@@ -2,6 +2,7 @@
 
 import { useState, KeyboardEvent } from "react"
 import { useRouter } from "next/navigation"
+import { useSession } from "next-auth/react"
 import Link from "next/link"
 import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -65,8 +66,11 @@ function SuccessView({ newId, onReset }: { newId: string; onReset: () => void })
 // ── Page ───────────────────────────────────────────────────────────────────
 export default function ResourceNewPage() {
   const router = useRouter()
+  const { data: session } = useSession()
+  const isDemo = session?.user?.email === 'test@loopin.kr'
   const [newId, setNewId] = useState<string | null>(null)
   const [tagInput, setTagInput] = useState("")
+  const [demoBlocked, setDemoBlocked] = useState(false)
 
   const {
     register,
@@ -74,7 +78,6 @@ export default function ResourceNewPage() {
     watch,
     control,
     setValue,
-    getValues,
     reset,
     formState: { errors, isSubmitting },
   } = useForm<ResourceCreateInput>({
@@ -101,6 +104,12 @@ export default function ResourceNewPage() {
   }
 
   async function onSubmit(data: ResourceCreateInput) {
+    if (isDemo) {
+      setDemoBlocked(true)
+      setTimeout(() => setDemoBlocked(false), 4000)
+      return
+    }
+
     const res = await fetch('/api/resources', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -135,6 +144,15 @@ export default function ResourceNewPage() {
           <span>/</span>
           <span className="text-neutral-600">자료 등록</span>
         </nav>
+
+        {demoBlocked && (
+          <div className="mb-6 px-4 py-3 rounded-xl bg-amber-50 border border-amber-200 text-sm text-amber-700 flex items-center gap-2">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+              <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            데모 버전에서는 실제 자료 등록이 제한됩니다. 폼 구성과 유효성 검사는 정상 작동해요.
+          </div>
+        )}
 
         {/* 헤더 */}
         <h1 className="text-2xl font-bold text-neutral-900 mt-6">자료 등록하기</h1>
