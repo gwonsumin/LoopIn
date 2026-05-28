@@ -12,7 +12,7 @@ export function ReportButton({ resourceId }: { resourceId: string }) {
 
   if (reported) {
     return (
-      <span className="text-xs text-neutral-400 px-3 py-2">신고되었습니다</span>
+      <span className="inline-flex min-h-11 items-center text-xs text-neutral-400 px-3 py-2">신고되었습니다</span>
     )
   }
 
@@ -20,7 +20,7 @@ export function ReportButton({ resourceId }: { resourceId: string }) {
     <button
       type="button"
       onClick={handleReport}
-      className="border border-neutral-200 text-neutral-400 text-xs px-3 py-2 rounded-lg hover:border-red-200 hover:text-red-400 transition-colors"
+      className="min-h-11 border border-neutral-200 text-neutral-400 text-xs px-3 py-2 rounded-lg hover:border-red-200 hover:text-red-400 transition-colors"
     >
       신고
     </button>

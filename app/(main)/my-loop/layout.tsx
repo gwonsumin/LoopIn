@@ -23,7 +23,7 @@ export default function MyLoopLayout({ children }: { children: React.ReactNode }
               <Link
                 key={label}
                 href={href}
-                className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm transition-colors ${
+                className={`flex min-h-11 items-center gap-2.5 px-3 py-2 rounded-xl text-sm transition-colors ${
                   active
                     ? "bg-primary/[0.08] text-primary font-medium"
                     : "text-neutral-600 hover:bg-neutral-50"
@@ -55,7 +55,7 @@ export default function MyLoopLayout({ children }: { children: React.ReactNode }
           </p>
           <Link
             href="/search?view=flows"
-            className="mt-4 w-full rounded-xl py-2.5 text-sm font-medium text-white bg-violet-500 hover:bg-violet-600 transition-colors text-center block"
+            className="mt-4 flex min-h-11 w-full items-center justify-center rounded-xl py-2.5 text-sm font-medium text-white bg-violet-500 hover:bg-violet-600 transition-colors text-center"
           >
             Flow 생성하기
           </Link>

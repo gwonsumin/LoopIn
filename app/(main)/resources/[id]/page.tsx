@@ -170,12 +170,12 @@ export default async function ResourceDetailPage({
 
   return (
     <div className="min-h-screen bg-neutral-50">
-      <div className="max-w-5xl mx-auto px-6 py-8">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
 
         {/* 브레드크럼 */}
         <Link
           href="/search"
-          className="inline-flex items-center gap-1.5 text-sm text-neutral-500 hover:text-neutral-800 transition-colors"
+          className="inline-flex min-h-11 items-center gap-1.5 text-sm text-neutral-500 hover:text-neutral-800 transition-colors"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <path d="M15 18l-6-6 6-6" />
@@ -218,7 +218,7 @@ export default async function ResourceDetailPage({
                 <Link
                   key={tag}
                   href={`/search?q=${encodeURIComponent(tag)}`}
-                  className="text-xs px-3 py-1 bg-neutral-50 text-neutral-500 rounded-full border border-neutral-100 hover:bg-primary/5 hover:text-primary hover:border-primary/20 transition-colors"
+                  className="inline-flex min-h-11 items-center text-xs px-3 py-1 bg-neutral-50 text-neutral-500 rounded-full border border-neutral-100 hover:bg-primary/5 hover:text-primary hover:border-primary/20 transition-colors"
                 >
                   #{tag}
                 </Link>
@@ -233,7 +233,7 @@ export default async function ResourceDetailPage({
                   <Link
                     key={f.slug}
                     href={`/flows/${f.slug}`}
-                    className="inline-flex items-center gap-1 text-xs px-3 py-1 rounded-full bg-primary/8 text-primary border border-primary/20 hover:bg-primary/15 transition-colors"
+                    className="inline-flex min-h-11 items-center gap-1 text-xs px-3 py-1 rounded-full bg-primary/8 text-primary border border-primary/20 hover:bg-primary/15 transition-colors"
                   >
                     ↗ {f.title}
                   </Link>
@@ -245,7 +245,7 @@ export default async function ResourceDetailPage({
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
               <Link
                 href={`/resources/${resource.id}/learn`}
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-primary hover:bg-primary-dark text-white text-sm font-medium transition-colors duration-200"
+                className="inline-flex min-h-11 items-center gap-2 px-6 py-3 rounded-xl bg-primary hover:bg-primary-dark text-white text-sm font-medium transition-colors duration-200"
               >
                 학습 시작하기
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -257,7 +257,7 @@ export default async function ResourceDetailPage({
                 href={resource.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 text-sm text-neutral-400 hover:text-neutral-700 transition-colors"
+                className="inline-flex min-h-11 items-center gap-1.5 text-sm text-neutral-400 hover:text-neutral-700 transition-colors"
               >
                 원본 링크 열기 ↗
               </a>
@@ -269,7 +269,7 @@ export default async function ResourceDetailPage({
                 <h2 className="text-base font-semibold text-neutral-800 mb-4">
                   같은 카테고리 자료
                 </h2>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                   {related.map((r) => (
                     <RelatedCard key={r.id} resource={r} />
                   ))}

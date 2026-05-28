@@ -39,7 +39,7 @@ export function ProfileStats() {
   ]
 
   return (
-    <div className="grid grid-cols-2 gap-3">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
       {stats.map(({ label, value, sub }) => (
         <div key={label} className="rounded-2xl border border-neutral-100 bg-white px-5 py-4">
           <p className="text-xs text-neutral-400 mb-1">{sub}</p>

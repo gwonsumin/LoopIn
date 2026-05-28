@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import Link from "next/link"
 import { MoreHorizontal } from "lucide-react"
 import type { Resource } from "@/lib/types"
+import { EmptyState } from "@/components/common/EmptyState"
 
 interface ProgressData {
   status: "started" | "completed" | "not-started"
@@ -64,7 +65,7 @@ function ContinuingCard({ resource, percent }: { resource: Resource; percent: nu
         </span>
         <button
           type="button"
-          className="text-neutral-300 hover:text-neutral-500 transition-colors"
+          className="flex h-11 w-11 items-center justify-center text-neutral-300 hover:text-neutral-500 transition-colors"
           aria-label="더보기"
         >
           <MoreHorizontal className="w-4 h-4" />
@@ -85,7 +86,7 @@ function ContinuingCard({ resource, percent }: { resource: Resource; percent: nu
 
       <Link
         href={`/resources/${resource.id}/learn`}
-        className="w-full py-2 rounded-full border text-sm font-medium text-center transition-colors hover:opacity-80"
+        className="flex min-h-11 w-full items-center justify-center py-2 rounded-full border text-sm font-medium text-center transition-colors hover:opacity-80"
         style={{ color: accentColor, borderColor: accentColor }}
       >
         이어보기
@@ -121,7 +122,22 @@ export function ContinuingSection({ resources }: { resources: Resource[] }) {
     })
     .slice(0, 3)
 
-  if (inProgress.length === 0) return null
+  if (inProgress.length === 0) {
+    if (resources.length === 0) return null
+    return (
+      <section>
+        <h2 className="text-lg font-bold text-neutral-900 mb-4">이어 학습 중</h2>
+        <div className="rounded-2xl border border-neutral-100 bg-white">
+          <EmptyState
+            title="아직 이어 학습할 자료가 없어요"
+            description="저장한 자료에서 학습을 시작하면 이곳에 진행 중인 자료가 표시돼요."
+            actions={[{ label: "저장한 자료 보기", href: "#saved-resources", variant: "secondary" }]}
+            className="py-10"
+          />
+        </div>
+      </section>
+    )
+  }
 
   return (
     <section>
@@ -129,12 +145,12 @@ export function ContinuingSection({ resources }: { resources: Resource[] }) {
         <h2 className="text-lg font-bold text-neutral-900">이어 학습 중</h2>
         <Link
           href="/my-loop/continuing"
-          className="text-sm text-neutral-400 hover:text-primary transition-colors"
+          className="inline-flex min-h-11 items-center text-sm text-neutral-400 hover:text-primary transition-colors"
         >
           전체 보기 &gt;
         </Link>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {inProgress.map((r) => (
           <ContinuingCard key={r.id} resource={r} percent={progressMap[r.id]?.percent ?? 0} />
         ))}

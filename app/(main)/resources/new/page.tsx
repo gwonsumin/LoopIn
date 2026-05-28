@@ -9,6 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { ResourceCreateSchema, type ResourceCreateInput } from "@/lib/validations/resource"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
+import { EmptyState } from "@/components/common/EmptyState"
 
 // ── 상수 ──────────────────────────────────────────────────────────────────
 const CATEGORIES = [
@@ -36,29 +37,20 @@ const TYPES = [
 // ── SuccessView ────────────────────────────────────────────────────────────
 function SuccessView({ newId, onReset }: { newId: string; onReset: () => void }) {
   return (
-    <div className="max-w-2xl mx-auto mt-16 text-center">
-      <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-emerald-50 mb-5">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-emerald-500" aria-hidden="true">
+    <div className="max-w-2xl mx-auto pt-10">
+      <EmptyState
+        title="자료가 등록되었습니다"
+        description="공유한 자료는 바로 상세 페이지에서 확인할 수 있어요."
+        icon={(
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-emerald-500" aria-hidden="true">
           <polyline points="20 6 9 17 4 12" />
-        </svg>
-      </div>
-      <h2 className="text-xl font-bold text-neutral-900 mb-2">자료가 등록되었습니다!</h2>
-      <p className="text-sm text-neutral-500 mb-8">공유해주셔서 감사해요 :)</p>
-      <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-        <Link
-          href={`/resources/${newId}`}
-          className="w-full sm:w-auto flex items-center justify-center gap-1.5 px-6 py-2.5 rounded-xl bg-primary hover:bg-primary-dark text-white text-sm font-medium transition-colors"
-        >
-          자료 보러 가기 →
-        </Link>
-        <button
-          type="button"
-          onClick={onReset}
-          className="w-full sm:w-auto px-6 py-2.5 rounded-xl border border-neutral-200 text-sm text-neutral-600 hover:border-neutral-400 transition-colors"
-        >
-          계속 등록하기
-        </button>
-      </div>
+          </svg>
+        )}
+        actions={[
+          { label: "자료 보러 가기", href: `/resources/${newId}` },
+          { label: "계속 등록하기", onClick: onReset, variant: "secondary" },
+        ]}
+      />
     </div>
   )
 }
@@ -71,6 +63,7 @@ export default function ResourceNewPage() {
   const [newId, setNewId] = useState<string | null>(null)
   const [tagInput, setTagInput] = useState("")
   const [demoBlocked, setDemoBlocked] = useState(false)
+  const [submitError, setSubmitError] = useState("")
 
   const {
     register,
@@ -104,26 +97,32 @@ export default function ResourceNewPage() {
   }
 
   async function onSubmit(data: ResourceCreateInput) {
+    setSubmitError("")
     if (isDemo) {
       setDemoBlocked(true)
       setTimeout(() => setDemoBlocked(false), 4000)
       return
     }
 
-    const res = await fetch('/api/resources', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    })
-    if (!res.ok) throw new Error('등록 실패')
-    const resource = await res.json()
-    setNewId(resource.id)
+    try {
+      const res = await fetch('/api/resources', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      })
+      if (!res.ok) throw new Error('등록 실패')
+      const resource = await res.json()
+      setNewId(resource.id)
+    } catch {
+      setSubmitError("자료 등록에 실패했어요. 입력 내용을 확인한 뒤 다시 시도해주세요.")
+    }
   }
 
   function handleReset() {
     reset({ tags: [] })
     setTagInput("")
     setNewId(null)
+    setSubmitError("")
   }
 
   if (newId) {
@@ -151,6 +150,15 @@ export default function ResourceNewPage() {
               <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
             </svg>
             데모 버전에서는 실제 자료 등록이 제한됩니다. 폼 구성과 유효성 검사는 정상 작동해요.
+          </div>
+        )}
+
+        {submitError && (
+          <div className="mb-6 px-4 py-3 rounded-xl bg-red-50 border border-red-100 text-sm text-red-500 flex items-start gap-2">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5 shrink-0" aria-hidden="true">
+              <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+            {submitError}
           </div>
         )}
 
@@ -210,7 +218,7 @@ export default function ResourceNewPage() {
                 type="button"
                 disabled={!urlVal}
                 onClick={() => window.open(urlVal, "_blank")}
-                className="border border-neutral-200 px-3 py-2 rounded-lg text-sm text-neutral-600 hover:bg-neutral-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors shrink-0"
+                className="min-h-11 border border-neutral-200 px-3 py-2 rounded-lg text-sm text-neutral-600 hover:bg-neutral-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors shrink-0"
               >
                 확인
               </button>
@@ -233,7 +241,7 @@ export default function ResourceNewPage() {
                       key={c.value}
                       type="button"
                       onClick={() => field.onChange(c.value)}
-                      className={`border rounded-full px-4 py-2 text-sm cursor-pointer transition-colors ${
+                      className={`min-h-11 border rounded-full px-4 py-2 text-sm cursor-pointer transition-colors ${
                         field.value === c.value
                           ? "bg-primary text-white border-primary"
                           : "border-neutral-200 text-neutral-600 hover:border-primary/30"
@@ -263,7 +271,7 @@ export default function ResourceNewPage() {
                       key={l.value}
                       type="button"
                       onClick={() => field.onChange(l.value)}
-                      className={`border rounded-xl px-4 py-2.5 text-sm cursor-pointer transition-colors ${
+                      className={`min-h-11 border rounded-xl px-4 py-2.5 text-sm cursor-pointer transition-colors ${
                         field.value === l.value
                           ? "border-primary bg-primary/5 text-primary font-medium"
                           : "border-neutral-200 text-neutral-600 hover:border-neutral-300"
@@ -293,7 +301,7 @@ export default function ResourceNewPage() {
                       key={t.value}
                       type="button"
                       onClick={() => field.onChange(t.value)}
-                      className={`border rounded-full px-4 py-2 text-sm cursor-pointer transition-colors ${
+                      className={`min-h-11 border rounded-full px-4 py-2 text-sm cursor-pointer transition-colors ${
                         field.value === t.value
                           ? "bg-primary text-white border-primary"
                           : "border-neutral-200 text-neutral-600 hover:border-primary/30"
@@ -326,7 +334,7 @@ export default function ResourceNewPage() {
                   <button
                     type="button"
                     onClick={() => removeTag(tag)}
-                    className="text-neutral-400 hover:text-neutral-600 transition-colors leading-none"
+                    className="inline-flex h-6 w-6 items-center justify-center text-neutral-400 hover:text-neutral-600 transition-colors leading-none"
                     aria-label={`${tag} 태그 제거`}
                   >
                     ×
@@ -355,16 +363,16 @@ export default function ResourceNewPage() {
             <button
               type="button"
               onClick={() => router.back()}
-              className="text-sm text-neutral-400 hover:text-neutral-600 transition-colors"
+              className="min-h-11 px-2 text-sm text-neutral-400 hover:text-neutral-600 transition-colors"
             >
               취소
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="bg-primary hover:bg-primary-dark text-white px-8 py-3 rounded-xl text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="min-h-11 bg-primary hover:bg-primary-dark text-white px-8 py-3 rounded-xl text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isSubmitting ? "등록 중..." : "자료 등록하기"}
+              {isSubmitting ? "자료 등록 중..." : "자료 등록하기"}
             </button>
           </div>
 

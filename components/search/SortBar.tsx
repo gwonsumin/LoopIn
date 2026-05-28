@@ -12,7 +12,7 @@ interface Props {
 
 export default function SortBar({ total, sort, onSortChange, view, onViewChange }: Props) {
   return (
-    <div className="flex justify-between items-center mb-4">
+    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4">
       <p className="text-sm text-neutral-500">{total}개의 자료를 찾았습니다</p>
       <div className="flex items-center gap-2">
         <div className="flex items-center gap-1 bg-neutral-100 rounded-xl p-1">
@@ -21,7 +21,7 @@ export default function SortBar({ total, sort, onSortChange, view, onViewChange 
               key={v}
               type="button"
               onClick={() => onSortChange(v)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+              className={`min-h-11 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                 sort === v
                   ? "bg-white text-neutral-900 shadow-sm"
                   : "text-neutral-500 hover:text-neutral-700"
@@ -36,7 +36,7 @@ export default function SortBar({ total, sort, onSortChange, view, onViewChange 
           <button
             type="button"
             onClick={() => onViewChange("grid")}
-            className={`p-1.5 rounded-lg transition-colors ${
+            className={`w-11 h-11 flex items-center justify-center rounded-lg transition-colors ${
               view === "grid"
                 ? "bg-neutral-100 text-neutral-900"
                 : "text-neutral-400 hover:text-neutral-600"
@@ -48,7 +48,7 @@ export default function SortBar({ total, sort, onSortChange, view, onViewChange 
           <button
             type="button"
             onClick={() => onViewChange("list")}
-            className={`p-1.5 rounded-lg transition-colors ${
+            className={`w-11 h-11 flex items-center justify-center rounded-lg transition-colors ${
               view === "list"
                 ? "bg-neutral-100 text-neutral-900"
                 : "text-neutral-400 hover:text-neutral-600"

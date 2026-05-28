@@ -135,44 +135,44 @@ export function LearnClient({ resource, related }: { resource: Resource; related
   return (
     <>
       {/* SlimHeader */}
-      <header className="fixed top-0 left-0 right-0 z-50 h-14 bg-white/95 backdrop-blur border-b border-neutral-100 flex items-center px-4 gap-3">
+      <header className="fixed top-0 left-0 right-0 z-50 min-h-14 bg-white/95 backdrop-blur border-b border-neutral-100 flex flex-wrap items-center px-4 py-2 gap-2 sm:gap-3">
         <Link
           href={`/resources/${resource.id}`}
-          className="flex items-center gap-1.5 text-sm text-neutral-500 hover:text-neutral-800 transition-colors shrink-0"
+          className="flex min-h-11 items-center gap-1.5 text-sm text-neutral-500 hover:text-neutral-800 transition-colors shrink-0"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <path d="M15 18l-6-6 6-6" />
           </svg>
           뒤로
         </Link>
-        <p className="flex-1 text-sm font-medium text-neutral-800 truncate">{resource.title}</p>
-        <div className="flex items-center gap-2 shrink-0">
+        <p className="min-w-0 flex-1 text-sm font-medium text-neutral-800 truncate">{resource.title}</p>
+        <div className="flex min-h-11 items-center gap-2 shrink-0">
           {currentFlowTitle && (
             <span className="hidden sm:block text-xs text-neutral-400 truncate max-w-[120px]">
               {currentFlowTitle}
             </span>
           )}
-          <span className="text-xs text-neutral-400">{displayPercent}%</span>
+          <span className="text-xs text-neutral-400">진행률 {displayPercent}%</span>
           {status === 'completed' ? (
             <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-medium border border-emerald-100">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <path d="M20 6L9 17l-5-5" />
               </svg>
-              완료됨
+              학습 완료
             </span>
           ) : (
             <button
               onClick={handleComplete}
-              className="px-3 py-1 rounded-full bg-primary hover:bg-primary-dark text-white text-xs font-medium transition-colors"
+              className="min-h-11 px-3 py-1 rounded-full bg-primary hover:bg-primary-dark text-white text-xs font-medium transition-colors"
             >
-              완료하기
+              학습 완료하기
             </button>
           )}
         </div>
       </header>
 
       {/* ProgressBar */}
-      <div className="fixed top-14 left-0 w-full h-1 bg-neutral-800 z-40">
+      <div className="fixed top-[68px] sm:top-14 left-0 w-full h-1 bg-neutral-800 z-40">
         <div
           className="h-full bg-primary transition-[width] duration-300"
           style={{ width: `${displayPercent}%` }}
@@ -180,7 +180,7 @@ export function LearnClient({ resource, related }: { resource: Resource; related
       </div>
 
       {/* Body */}
-      <div className="pt-16 max-w-4xl mx-auto px-4 py-8 space-y-8">
+      <div className="pt-24 sm:pt-16 max-w-4xl mx-auto px-4 py-8 space-y-8">
 
         {/* 자료 메타 */}
         <div>
@@ -223,18 +223,23 @@ export function LearnClient({ resource, related }: { resource: Resource; related
         {status === 'completed' && (
           <div className="rounded-2xl bg-white/5 border border-white/10 p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
-              <p className="text-sm font-semibold text-white">🎉 학습 완료!</p>
+              <p className="text-sm font-semibold text-white">학습을 완료했어요</p>
               {(currentFlowTitle ?? relatedFlow?.title) && (
                 <p className="text-xs text-neutral-400 mt-0.5">
-                  이 자료는 <span className="text-primary">{currentFlowTitle ?? relatedFlow?.title}</span>의 일부예요
+                  <span className="text-primary">{currentFlowTitle ?? relatedFlow?.title}</span>에서 다음 학습으로 이어갈 수 있어요.
+                </p>
+              )}
+              {!nextResourceId && !relatedFlow && (
+                <p className="text-xs text-neutral-400 mt-0.5">
+                  완료한 자료는 My Loop에서 다시 확인할 수 있어요.
                 </p>
               )}
             </div>
-            <div className="flex items-center gap-2 shrink-0">
+            <div className="flex flex-col sm:flex-row w-full sm:w-auto items-stretch sm:items-center gap-2 shrink-0">
               {nextResourceId && (
                 <Link
                   href={`/resources/${nextResourceId}/learn`}
-                  className="px-4 py-2 rounded-xl bg-white text-primary border border-primary/30 hover:bg-primary/5 text-xs font-medium transition-colors"
+                  className="inline-flex min-h-11 items-center justify-center px-4 py-2 rounded-xl bg-white text-primary border border-primary/30 hover:bg-primary/5 text-xs font-medium transition-colors"
                 >
                   다음 자료로 →
                 </Link>
@@ -242,14 +247,14 @@ export function LearnClient({ resource, related }: { resource: Resource; related
               {relatedFlow && (
                 <Link
                   href={`/flows/${relatedFlow.slug}`}
-                  className="px-4 py-2 rounded-xl bg-primary hover:bg-primary-dark text-white text-xs font-medium transition-colors"
+                  className="inline-flex min-h-11 items-center justify-center px-4 py-2 rounded-xl bg-primary hover:bg-primary-dark text-white text-xs font-medium transition-colors"
                 >
                   Flow 이어가기
                 </Link>
               )}
               <Link
                 href="/my-loop"
-                className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-white text-xs font-medium transition-colors"
+                className="inline-flex min-h-11 items-center justify-center px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-white text-xs font-medium transition-colors"
               >
                 My Loop 보기
               </Link>
@@ -261,7 +266,7 @@ export function LearnClient({ resource, related }: { resource: Resource; related
         {related.length > 0 && (
           <section>
             <h2 className="text-base font-semibold text-neutral-300 mb-4">다음 추천 자료</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
               {related.map((r) => (
                 <Link
                   key={r.id}

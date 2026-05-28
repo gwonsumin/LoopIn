@@ -45,8 +45,8 @@ function LoginContent() {
       </div>
 
       {/* 오른쪽 패널 */}
-      <div className="md:w-1/2 min-h-screen bg-gradient-to-br from-[#F8F6FF] to-[#FFF0F5] flex items-center justify-center p-6 md:px-8 md:py-16">
-        <div className="bg-white rounded-3xl shadow-lg p-10 w-full max-w-md">
+      <div className="md:w-1/2 min-h-screen bg-gradient-to-br from-[#F8F6FF] to-[#FFF0F5] flex items-center justify-center p-4 sm:p-6 md:px-8 md:py-16">
+        <div className="bg-white rounded-3xl shadow-lg p-6 sm:p-10 w-full max-w-md">
           <h1 className="text-2xl font-bold text-neutral-900 text-center">Welcome Back</h1>
           <p className="text-sm text-neutral-500 text-center mt-2">
             오늘의 학습 흐름을 다시 이어가요.
@@ -57,7 +57,7 @@ function LoginContent() {
           <button
             type="button"
             onClick={handleGoogleSignIn}
-            className="w-full border border-neutral-200 rounded-xl py-3.5 px-4 flex items-center justify-center gap-3 hover:bg-neutral-50 transition-colors"
+            className="w-full min-h-11 border border-neutral-200 rounded-xl py-3.5 px-4 flex items-center justify-center gap-3 hover:bg-neutral-50 transition-colors"
           >
             <Image
               src="/icons/Google.svg"
@@ -84,14 +84,14 @@ function LoginContent() {
               type="button"
               onClick={handleTestLogin}
               disabled={loading}
-              className="w-full py-2.5 rounded-lg bg-neutral-800 hover:bg-neutral-900 text-white text-sm font-medium transition-colors disabled:opacity-50"
+              className="w-full min-h-11 py-2.5 rounded-lg bg-neutral-800 hover:bg-neutral-900 text-white text-sm font-medium transition-colors disabled:opacity-50"
             >
               {loading ? '로그인 중...' : '테스트 계정으로 로그인'}
             </button>
           </div>
 
           <p className="mt-6 text-center">
-            <Link href="/" className="text-xs text-neutral-400 hover:text-primary transition-colors">
+            <Link href="/" className="inline-flex min-h-11 items-center text-xs text-neutral-400 hover:text-primary transition-colors">
               로그인 없이 탐색하기 →
             </Link>
           </p>

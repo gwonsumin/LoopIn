@@ -61,7 +61,7 @@ export function SaveButton({ resourceId, className = "" }: SaveButtonProps) {
       <button
         type="button"
         disabled
-        className={`flex items-center gap-2 px-5 py-2.5 rounded-xl border border-neutral-200 text-sm font-medium text-neutral-400 bg-white ${className}`}
+        className={`flex min-h-11 items-center gap-2 px-5 py-2.5 rounded-xl border border-neutral-200 text-sm font-medium text-neutral-400 bg-white ${className}`}
       >
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
           <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
@@ -77,7 +77,7 @@ export function SaveButton({ resourceId, className = "" }: SaveButtonProps) {
       onClick={handleToggle}
       disabled={loading}
       aria-pressed={saved}
-      className={`flex items-center gap-2 px-5 py-2.5 rounded-xl border text-sm font-medium transition-all duration-200 disabled:opacity-60 ${
+      className={`flex min-h-11 items-center gap-2 px-5 py-2.5 rounded-xl border text-sm font-medium transition-all duration-200 disabled:opacity-60 ${
         saved
           ? "border-primary bg-primary/5 text-primary"
           : "border-neutral-200 bg-white text-neutral-700 hover:border-primary/40 hover:text-primary"

@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import Link from "next/link"
 import { useSession } from "next-auth/react"
 import { useQuery } from "@tanstack/react-query"
 import { ResourceCard } from "@/components/search/ResourceCard"
@@ -9,6 +8,9 @@ import { StatsRow } from "@/components/my-loop/StatsRow"
 import { ContinuingSection } from "@/components/my-loop/ContinuingSection"
 import { MyFlowsSection } from "@/components/my-loop/MyFlowsSection"
 import { LearningHistory } from "@/components/my-loop/LearningHistory"
+import { EmptyState } from "@/components/common/EmptyState"
+import { ErrorState } from "@/components/common/ErrorState"
+import { LoadingState } from "@/components/common/LoadingState"
 import type { Resource } from "@/lib/types"
 
 const CATEGORY_TABS = [
@@ -21,93 +23,38 @@ const CATEGORY_TABS = [
 ]
 
 function SkeletonGrid() {
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {Array.from({ length: 3 }).map((_, i) => (
-        <div key={i} className="rounded-2xl bg-neutral-100 h-64 animate-pulse" />
-      ))}
-    </div>
-  )
+  return <LoadingState rows={3} />
 }
 
 function LoginPrompt() {
   return (
-    <div className="min-h-[400px] flex flex-col items-center justify-center text-center">
-      <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 mb-5">
-        <svg
-          width="28"
-          height="28"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="#F96A84"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
-        >
-          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-          <circle cx="12" cy="7" r="4" />
-        </svg>
-      </div>
-      <p className="text-neutral-800 font-semibold mb-2">로그인이 필요해요</p>
-      <p className="text-sm text-neutral-400 mb-6">
-        로그인하면 어디서든 내 Loop를 이어볼 수 있어요
-      </p>
-      <Link
-        href="/login"
-        className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-primary hover:bg-primary-dark text-white text-sm font-medium transition-colors"
-      >
-        로그인하기
-      </Link>
-    </div>
+    <EmptyState
+      title="로그인이 필요해요"
+      description="로그인하면 저장한 자료와 이어 학습 중인 Loop를 한곳에서 확인할 수 있어요."
+      actions={[{ label: "로그인하기", href: "/login" }]}
+      className="min-h-[400px]"
+    />
   )
 }
 
 function EmptyNoSaves() {
   return (
-    <div className="min-h-[400px] flex flex-col items-center justify-center text-center">
-      <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-neutral-100 mb-5">
-        <svg
-          width="28"
-          height="28"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className="text-neutral-400"
-          aria-hidden="true"
-        >
-          <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
-        </svg>
-      </div>
-      <p className="text-neutral-500 font-medium mb-1">아직 저장한 자료가 없어요</p>
-      <p className="text-sm text-neutral-400 mb-6">
-        마음에 드는 자료를 저장하고 나만의 루프를 만들어보세요
-      </p>
-      <Link
-        href="/search"
-        className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-primary hover:bg-primary-dark text-white text-sm font-medium transition-colors"
-      >
-        자료 탐색하기
-      </Link>
-    </div>
+    <EmptyState
+      title="아직 이어 학습할 자료가 없어요"
+      description="마음에 드는 자료를 저장하면 My Loop에서 다시 이어볼 수 있어요."
+      actions={[{ label: "자료 탐색하기", href: "/search" }]}
+      className="min-h-[400px]"
+    />
   )
 }
 
 function EmptyFiltered({ onReset }: { onReset: () => void }) {
   return (
-    <div className="text-center py-20">
-      <p className="text-neutral-400 text-sm mb-4">이 카테고리에 저장된 자료가 없어요</p>
-      <button
-        type="button"
-        onClick={onReset}
-        className="text-sm text-primary hover:underline font-medium"
-      >
-        전체 보기
-      </button>
-    </div>
+    <EmptyState
+      title="이 카테고리에 저장된 자료가 없어요"
+      description="전체 저장 자료로 돌아가 다른 자료를 확인해보세요."
+      actions={[{ label: "전체 보기", onClick: onReset, variant: "secondary" }]}
+    />
   )
 }
 
@@ -135,7 +82,7 @@ function ResourceGrid({ resources }: { resources: Resource[] }) {
               key={tab.value}
               type="button"
               onClick={() => setActiveCategory(tab.value)}
-              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
+              className={`min-h-11 px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
                 activeCategory === tab.value
                   ? "bg-primary text-white"
                   : "bg-white border border-neutral-200 text-neutral-600 hover:border-primary/40 hover:text-primary"
@@ -174,7 +121,7 @@ export default function MyLoopPage() {
   const [inProgressCount, setInProgressCount] = useState(0)
   const [flowCount, setFlowCount] = useState(0)
 
-  const { data: apiData, isLoading: apiLoading } = useQuery({
+  const { data: apiData, isLoading: apiLoading, isError, refetch } = useQuery({
     queryKey: ["loops"],
     queryFn: () =>
       fetch("/api/loops").then((r) => r.json()) as Promise<{ data: Resource[] }>,
@@ -222,6 +169,12 @@ export default function MyLoopPage() {
 
         {isLoading ? (
           <SkeletonGrid />
+        ) : isError ? (
+          <ErrorState
+            title="My Loop를 불러오지 못했어요"
+            description="저장한 자료 목록을 가져오는 중 문제가 생겼어요."
+            onRetry={() => { void refetch() }}
+          />
         ) : status === "unauthenticated" ? (
           <LoginPrompt />
         ) : (
@@ -232,7 +185,7 @@ export default function MyLoopPage() {
             <LearningHistory resources={resources} />
 
             {/* 최근 저장한 자료 */}
-            <section>
+            <section id="saved-resources">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-bold text-neutral-900">최근 저장한 자료</h2>
               </div>
