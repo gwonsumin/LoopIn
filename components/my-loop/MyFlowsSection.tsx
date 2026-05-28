@@ -4,6 +4,7 @@ import Link from "next/link"
 import { Plus, X } from "lucide-react"
 import type { Resource } from "@/lib/types"
 import { CreateFlowModal } from "./CreateFlowModal"
+import { EmptyState } from "@/components/common/EmptyState"
 
 interface MyCustomFlow {
   id: string
@@ -45,14 +46,14 @@ function FlowDetailModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative w-full max-w-lg mx-4 bg-white rounded-2xl shadow-xl flex flex-col max-h-[80vh]">
+      <div className="relative w-full max-w-lg mx-4 bg-white rounded-2xl shadow-xl flex flex-col max-h-[85vh]">
         {/* header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-100">
           <div>
             <h2 className="text-base font-bold text-neutral-900">{flow.title}</h2>
             <p className="text-xs text-neutral-400 mt-0.5">{flow.resourceIds.length}개 자료</p>
           </div>
-          <button onClick={onClose} className="text-neutral-400 hover:text-neutral-700 transition-colors">
+          <button onClick={onClose} className="flex h-11 w-11 items-center justify-center text-neutral-400 hover:text-neutral-700 transition-colors" aria-label="닫기">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -92,7 +93,7 @@ function FlowDetailModal({
           <Link
             href={startId ? `/resources/${startId}/learn` : "/my-loop"}
             onClick={onClose}
-            className="block w-full py-2.5 rounded-xl bg-primary hover:bg-primary-dark text-white text-sm font-medium text-center transition-colors"
+            className="flex min-h-11 w-full items-center justify-center py-2.5 rounded-xl bg-primary hover:bg-primary-dark text-white text-sm font-medium text-center transition-colors"
           >
             {firstIncompleteId ? "이어서 학습하기 →" : "처음부터 다시 학습하기 →"}
           </Link>
@@ -180,7 +181,7 @@ export function MyFlowsSection({ resources }: { resources: Resource[] }) {
         <button
           type="button"
           onClick={() => setShowModal(true)}
-          className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:text-primary-dark transition-colors"
+          className="inline-flex min-h-11 items-center gap-1 text-sm font-medium text-primary hover:text-primary-dark transition-colors"
         >
           <Plus className="w-4 h-4" />
           Flow 만들기
@@ -188,19 +189,16 @@ export function MyFlowsSection({ resources }: { resources: Resource[] }) {
       </div>
 
       {myFlows.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-neutral-200 p-8 text-center">
-          <p className="text-sm text-neutral-400 mb-3">아직 만든 Flow가 없어요</p>
-          <button
-            type="button"
-            onClick={() => setShowModal(true)}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary text-white text-sm font-medium hover:bg-primary-dark transition-colors"
-          >
-            <Plus className="w-4 h-4" />
-            첫 번째 Flow 만들기
-          </button>
+        <div className="rounded-2xl border border-dashed border-neutral-200 bg-white">
+          <EmptyState
+            title="아직 만든 Flow가 없어요"
+            description="저장한 자료를 연결하면 나만의 학습 흐름으로 이어갈 수 있어요."
+            actions={[{ label: "첫 번째 Flow 만들기", onClick: () => setShowModal(true) }]}
+            className="py-10"
+          />
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {myFlows.map(flow => (
             <CustomFlowCard
               key={flow.id}

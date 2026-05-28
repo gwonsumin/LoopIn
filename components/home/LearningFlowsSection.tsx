@@ -23,7 +23,7 @@ export default function LearningFlowsSection({ flows }: Props) {
             </div>
             <Link
               href="/search?view=flows"
-              className="shrink-0 self-start text-sm text-neutral-600 border border-neutral-200 rounded-full px-4 py-2 hover:bg-neutral-50 transition-colors"
+              className="shrink-0 self-start inline-flex min-h-11 items-center text-sm text-neutral-600 border border-neutral-200 rounded-full px-4 py-2 hover:bg-neutral-50 transition-colors"
             >
               모두 보기 →
             </Link>
@@ -31,7 +31,7 @@ export default function LearningFlowsSection({ flows }: Props) {
         </RevealSection>
 
         {/* 카드 그리드 */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {flows.map((flow, index) => (
             <RevealSection key={flow.id} delay={index * 100}>
               <FlowCard flow={flow} />

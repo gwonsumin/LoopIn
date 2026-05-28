@@ -87,10 +87,10 @@ export default function SearchOverlay({ isOpen, onClose }: Props) {
     >
       {/* 컨텐츠 카드 — 버블링 차단 */}
       <div
-        className="absolute top-[10%] left-1/2 -translate-x-1/2 w-full max-w-2xl px-4"
+        className="absolute inset-x-0 top-0 h-full sm:top-[10%] sm:left-1/2 sm:h-auto sm:-translate-x-1/2 w-full sm:max-w-2xl sm:px-4"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="bg-white rounded-3xl p-8 shadow-2xl">
+        <div className="h-full overflow-y-auto bg-white p-5 shadow-2xl sm:h-auto sm:rounded-3xl sm:p-8">
 
           {/* 타이틀 */}
           <h2 className="text-2xl font-bold text-neutral-900 mb-6">
@@ -100,7 +100,7 @@ export default function SearchOverlay({ isOpen, onClose }: Props) {
           </h2>
 
           {/* 검색 입력창 */}
-          <div className="flex items-center gap-3 rounded-full border border-neutral-200 px-4 py-2 focus-within:border-primary/40 transition-colors">
+          <div className="flex items-center gap-3 rounded-full border border-neutral-200 px-4 py-2 focus-within:border-primary/40 transition-colors min-h-[48px]">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/icons/header-search.svg" alt="" width={20} height={20} className="icon-muted shrink-0" />
             <input
@@ -117,7 +117,7 @@ export default function SearchOverlay({ isOpen, onClose }: Props) {
               type="button"
               onClick={() => handleSearch()}
               aria-label="검색"
-              className="shrink-0 w-8 h-8 rounded-full bg-primary hover:bg-primary-dark transition-colors flex items-center justify-center"
+              className="shrink-0 w-11 h-11 rounded-full bg-primary hover:bg-primary-dark transition-colors flex items-center justify-center"
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/icons/arrow.svg" alt="" width={16} height={16} className="brightness-0 invert" />
@@ -132,7 +132,7 @@ export default function SearchOverlay({ isOpen, onClose }: Props) {
                 key={s.id}
                 type="button"
                 onClick={() => handleSearch(s.title)}
-                className="flex-none rounded-2xl border border-neutral-100 bg-white p-4 min-w-[140px] text-left hover:bg-neutral-50 transition-colors"
+                className="flex-none rounded-2xl border border-neutral-100 bg-white p-4 min-w-[140px] text-left hover:bg-neutral-50 active:bg-neutral-50 transition-colors"
               >
                 <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -152,7 +152,7 @@ export default function SearchOverlay({ isOpen, onClose }: Props) {
                 <button
                   type="button"
                   onClick={clearRecent}
-                  className="flex items-center gap-1 text-xs text-neutral-400 hover:text-neutral-600 transition-colors"
+                  className="flex items-center gap-1 min-h-11 px-2 text-xs text-neutral-400 hover:text-neutral-600 transition-colors"
                 >
                   모두 지우기
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -165,7 +165,7 @@ export default function SearchOverlay({ isOpen, onClose }: Props) {
                     key={keyword}
                     type="button"
                     onClick={() => handleSearch(keyword)}
-                    className="bg-primary/10 text-primary text-sm px-4 py-2 rounded-full hover:bg-primary/20 transition-colors"
+                    className="min-h-11 bg-primary/10 text-primary text-sm px-4 py-2 rounded-full hover:bg-primary/20 transition-colors"
                   >
                     {keyword}
                   </button>

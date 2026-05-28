@@ -169,7 +169,7 @@ export default function FlowCard({ flow }: Props) {
             <button
               type="button"
               onClick={() => setFlipped(true)}
-              className={`w-full rounded-xl py-3 text-sm font-medium transition-colors ${t.btn}`}
+              className={`w-full min-h-11 rounded-xl py-3 text-sm font-medium transition-colors ${t.btn}`}
             >
               자세히 보기 →
             </button>
@@ -239,14 +239,14 @@ export default function FlowCard({ flow }: Props) {
               <button
                 type="button"
                 onClick={() => router.push(`/flows/${flow.slug}`)}
-                className={`w-full rounded-xl py-3 text-sm font-bold text-white transition-colors ${t.ctaBg}`}
+                className={`w-full min-h-11 rounded-xl py-3 text-sm font-bold text-white transition-colors ${t.ctaBg}`}
               >
                 Flow 시작하기 →
               </button>
               <button
                 type="button"
                 onClick={() => setFlipped(false)}
-                className="w-full mt-3 py-2 text-xs text-neutral-400 text-center hover:text-neutral-600 transition-colors"
+                className="w-full min-h-11 mt-3 py-2 text-xs text-neutral-400 text-center hover:text-neutral-600 transition-colors"
               >
                 ← 앞면으로 돌아가기
               </button>

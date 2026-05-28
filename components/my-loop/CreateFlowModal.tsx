@@ -55,11 +55,11 @@ export function CreateFlowModal({
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
 
       {/* modal */}
-      <div className="relative w-full max-w-xl mx-4 bg-white rounded-2xl shadow-xl flex flex-col max-h-[80vh]">
+      <div className="relative w-full max-w-xl mx-4 bg-white rounded-2xl shadow-xl flex flex-col max-h-[85vh]">
         {/* header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-100">
           <h2 className="text-base font-bold text-neutral-900">나만의 Flow 만들기</h2>
-          <button onClick={onClose} className="text-neutral-400 hover:text-neutral-700 transition-colors">
+          <button onClick={onClose} className="flex h-11 w-11 items-center justify-center text-neutral-400 hover:text-neutral-700 transition-colors" aria-label="닫기">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -75,7 +75,7 @@ export function CreateFlowModal({
                 key={r.id}
                 type="button"
                 onClick={() => toggle(r.id)}
-                className={`w-full flex items-center gap-3 p-3 rounded-xl border text-left transition-all ${
+                className={`w-full min-h-11 flex items-center gap-3 p-3 rounded-xl border text-left transition-all ${
                   isSelected
                     ? "border-primary/40 bg-primary/5"
                     : "border-neutral-100 bg-white hover:border-neutral-200"
@@ -105,12 +105,12 @@ export function CreateFlowModal({
             placeholder="Flow 이름을 입력하세요"
             value={title}
             onChange={e => setTitle(e.target.value)}
-            className="w-full px-4 py-2.5 rounded-xl border border-neutral-200 text-sm focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/10 transition"
+            className="w-full min-h-11 px-4 py-2.5 rounded-xl border border-neutral-200 text-sm focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/10 transition"
           />
           <button
             onClick={handleSave}
             disabled={!title.trim() || selected.length === 0}
-            className="w-full py-2.5 rounded-xl bg-primary text-white text-sm font-medium disabled:opacity-40 disabled:cursor-not-allowed hover:bg-primary-dark transition-colors"
+            className="w-full min-h-11 py-2.5 rounded-xl bg-primary text-white text-sm font-medium disabled:opacity-40 disabled:cursor-not-allowed hover:bg-primary-dark transition-colors"
           >
             Flow 저장하기
           </button>

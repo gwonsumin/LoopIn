@@ -138,7 +138,7 @@ export function Header() {
                 {/* 메뉴 버튼 */}
                 <Link
                   href={item.href}
-                  className={`flex items-center gap-1 text-sm font-medium px-3 py-2 rounded-lg transition-colors hover:bg-neutral-50 ${
+                  className={`flex min-h-11 items-center gap-1 text-sm font-medium px-3 py-2 rounded-lg transition-colors hover:bg-neutral-50 ${
                     isActive(item.href)
                       ? "text-primary"
                       : "text-neutral-600 hover:text-primary"
@@ -159,7 +159,7 @@ export function Header() {
                       <Link
                         key={sub.href + sub.label}
                         href={sub.href}
-                        className={`block px-4 py-2.5 text-sm transition-colors hover:bg-neutral-50 ${
+                        className={`flex min-h-11 items-center px-4 py-2.5 text-sm transition-colors hover:bg-neutral-50 ${
                           sub.isPrimary
                             ? "text-primary font-medium border-t border-neutral-100 mt-1 pt-3"
                             : "text-neutral-600 hover:text-neutral-900"
@@ -180,7 +180,7 @@ export function Header() {
               type="button"
               aria-label="검색 열기"
               onClick={() => setSearchOpen(true)}
-              className="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-neutral-100 transition-colors"
+              className="w-11 h-11 flex items-center justify-center rounded-lg hover:bg-neutral-100 transition-colors"
             >
               <Image
                 src="/icons/header-search.svg"
@@ -198,7 +198,7 @@ export function Header() {
                   type="button"
                   onClick={() => setProfileOpen((v) => !v)}
                   onBlur={() => setTimeout(() => setProfileOpen(false), 150)}
-                  className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-neutral-100 transition-colors"
+                  className="flex min-h-11 items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-neutral-100 transition-colors"
                 >
                   {session.user.image ? (
                     <Image
@@ -222,14 +222,14 @@ export function Header() {
                     <Link
                       href="/profile"
                       onClick={() => setProfileOpen(false)}
-                      className="block px-4 py-2.5 text-sm text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 transition-colors"
+                      className="flex min-h-11 items-center px-4 py-2.5 text-sm text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 transition-colors"
                     >
                       마이페이지
                     </Link>
                     <Link
                       href="/my-loop"
                       onClick={() => setProfileOpen(false)}
-                      className="block px-4 py-2.5 text-sm text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 transition-colors"
+                      className="flex min-h-11 items-center px-4 py-2.5 text-sm text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 transition-colors"
                     >
                       My Loop
                     </Link>
@@ -237,7 +237,7 @@ export function Header() {
                       <button
                         type="button"
                         onClick={() => { clearUserLocalStorage(); signOut({ callbackUrl: "/" }) }}
-                        className="w-full text-left px-4 py-2.5 text-sm text-neutral-500 hover:bg-neutral-50 hover:text-red-400 transition-colors"
+                        className="w-full min-h-11 text-left px-4 py-2.5 text-sm text-neutral-500 hover:bg-neutral-50 hover:text-red-400 transition-colors"
                       >
                         로그아웃
                       </button>
@@ -249,7 +249,7 @@ export function Header() {
               /* 비로그인 상태 */
               <Link
                 href="/login"
-                className="border border-neutral-200 text-sm px-4 py-2 rounded-full hover:border-primary hover:text-primary transition-colors text-neutral-700"
+                className="inline-flex min-h-11 items-center border border-neutral-200 text-sm px-4 py-2 rounded-full hover:border-primary hover:text-primary transition-colors text-neutral-700"
               >
                 로그인
               </Link>
@@ -262,7 +262,7 @@ export function Header() {
               type="button"
               aria-label="검색 열기"
               onClick={() => setSearchOpen(true)}
-              className="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-neutral-100 transition-colors"
+              className="w-11 h-11 flex items-center justify-center rounded-lg hover:bg-neutral-100 transition-colors"
             >
               <Image
                 src="/icons/header-search.svg"
@@ -279,7 +279,7 @@ export function Header() {
                   <button
                     type="button"
                     aria-label="메뉴 열기"
-                    className="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-neutral-100 transition-colors"
+                    className="w-11 h-11 flex items-center justify-center rounded-lg hover:bg-neutral-100 transition-colors"
                   />
                 }
               >
@@ -304,7 +304,7 @@ export function Header() {
                     type="button"
                     aria-label="메뉴 닫기"
                     onClick={() => setMobileOpen(false)}
-                    className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-neutral-100 transition-colors"
+                    className="w-11 h-11 flex items-center justify-center rounded-lg hover:bg-neutral-100 transition-colors"
                   >
                     <X className="h-4 w-4 text-neutral-500" />
                   </button>
@@ -317,7 +317,7 @@ export function Header() {
                       <Link
                         href={item.href}
                         onClick={() => setMobileOpen(false)}
-                        className={`flex items-center gap-2 text-sm font-semibold px-3 py-2 rounded-lg transition-colors hover:bg-neutral-50 ${
+                        className={`flex min-h-11 items-center gap-2 text-sm font-semibold px-3 py-2 rounded-lg transition-colors hover:bg-neutral-50 ${
                           isActive(item.href)
                             ? "text-primary"
                             : "text-neutral-800"
@@ -336,7 +336,7 @@ export function Header() {
                             key={sub.href + sub.label}
                             href={sub.href}
                             onClick={() => setMobileOpen(false)}
-                            className={`block text-sm px-5 py-2 rounded-lg transition-colors hover:bg-neutral-50 ${
+                            className={`flex min-h-11 items-center text-sm px-5 py-2 rounded-lg transition-colors hover:bg-neutral-50 ${
                               sub.isPrimary
                                 ? "text-primary font-medium"
                                 : "text-neutral-500 hover:text-neutral-700"
@@ -377,14 +377,14 @@ export function Header() {
                       <Link
                         href="/profile"
                         onClick={() => setMobileOpen(false)}
-                        className="block text-center w-full py-2 rounded-xl border border-neutral-200 text-sm text-neutral-600 hover:bg-neutral-50 transition-colors"
+                        className="flex min-h-11 items-center justify-center text-center w-full py-2 rounded-xl border border-neutral-200 text-sm text-neutral-600 hover:bg-neutral-50 transition-colors"
                       >
                         마이페이지
                       </Link>
                       <button
                         type="button"
                         onClick={() => { clearUserLocalStorage(); signOut({ callbackUrl: "/" }) }}
-                        className="w-full py-2 rounded-xl border border-neutral-200 text-sm text-neutral-500 hover:border-red-200 hover:text-red-400 transition-colors"
+                        className="w-full min-h-11 py-2 rounded-xl border border-neutral-200 text-sm text-neutral-500 hover:border-red-200 hover:text-red-400 transition-colors"
                       >
                         로그아웃
                       </button>
@@ -393,7 +393,7 @@ export function Header() {
                     <Link
                       href="/login"
                       onClick={() => setMobileOpen(false)}
-                      className="block text-center w-full py-2.5 rounded-xl bg-primary hover:bg-primary-dark text-white text-sm font-medium transition-colors"
+                      className="flex min-h-11 items-center justify-center text-center w-full py-2.5 rounded-xl bg-primary hover:bg-primary-dark text-white text-sm font-medium transition-colors"
                     >
                       로그인
                     </Link>

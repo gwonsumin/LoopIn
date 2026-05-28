@@ -7,6 +7,9 @@ import { useQuery } from "@tanstack/react-query"
 import FilterPanel, { type FilterSelected } from "@/components/search/FilterPanel"
 import SortBar from "@/components/search/SortBar"
 import { ResourceCard } from "@/components/search/ResourceCard"
+import { EmptyState as CommonEmptyState } from "@/components/common/EmptyState"
+import { ErrorState } from "@/components/common/ErrorState"
+import { LoadingState } from "@/components/common/LoadingState"
 import {
   Sheet,
   SheetContent,
@@ -20,55 +23,26 @@ const PAGE_SIZE = 12
 const SUGGESTED_TAGS = ["UX리서치", "React", "Figma", "프롬프트엔지니어링", "생산성"]
 
 // ── EmptyState ────────────────────────────────────────────────────────────
-function EmptyState({ q, onReset }: { q: string; onReset: () => void }) {
+function SearchEmptyState({ q, hasFilters, onReset }: { q: string; hasFilters: boolean; onReset: () => void }) {
   return (
-    <div className="flex flex-col items-center justify-center text-center py-20">
-      <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-neutral-100 mb-5">
-        <svg
-          width="28"
-          height="28"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className="text-neutral-400"
-          aria-hidden="true"
-        >
-          <circle cx="11" cy="11" r="8" />
-          <line x1="21" y1="21" x2="16.65" y2="16.65" />
-          <line x1="8" y1="11" x2="14" y2="11" />
-        </svg>
+    <CommonEmptyState
+      title={q ? `"${q}"에 맞는 자료가 없어요` : hasFilters ? "필터에 맞는 자료가 없어요" : "아직 보여줄 자료가 없어요"}
+      description={hasFilters ? "선택한 필터를 초기화하거나 다른 키워드로 다시 찾아보세요." : "다른 키워드로 검색하거나 추천 태그를 눌러보세요."}
+      actions={hasFilters ? [{ label: "필터 초기화", onClick: onReset }] : undefined}
+    >
+      <div className="mt-6 flex flex-wrap gap-2 justify-center">
+        <p className="w-full text-xs text-neutral-400 mb-1">이런 검색은 어때요?</p>
+        {SUGGESTED_TAGS.slice(0, q ? 3 : 5).map((tag) => (
+          <Link
+            key={tag}
+            href={`/search?q=${encodeURIComponent(tag)}`}
+            className="inline-flex min-h-11 items-center text-xs px-3 py-1.5 rounded-full bg-neutral-100 text-neutral-600 hover:bg-primary/10 hover:text-primary transition-colors"
+          >
+            {tag}
+          </Link>
+        ))}
       </div>
-      <p className="text-neutral-800 font-semibold mb-1">
-        {q ? `"${q}"에 맞는 자료가 없어요` : "해당 조건의 자료가 없어요"}
-      </p>
-      <p className="text-sm text-neutral-400 mb-6">
-        다른 키워드나 필터로 다시 찾아볼까요?
-      </p>
-      <button
-        type="button"
-        onClick={onReset}
-        className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-primary hover:bg-primary-dark text-white text-sm font-medium transition-colors"
-      >
-        필터 초기화
-      </button>
-      {q && (
-        <div className="mt-6 flex flex-wrap gap-2 justify-center">
-          <p className="w-full text-xs text-neutral-400 mb-1">이런 자료는 어때요?</p>
-          {SUGGESTED_TAGS.slice(0, 3).map((tag) => (
-            <Link
-              key={tag}
-              href={`/search?q=${encodeURIComponent(tag)}`}
-              className="text-xs px-3 py-1.5 rounded-full bg-neutral-100 text-neutral-600 hover:bg-primary/10 hover:text-primary transition-colors"
-            >
-              {tag}
-            </Link>
-          ))}
-        </div>
-      )}
-    </div>
+    </CommonEmptyState>
   )
 }
 
@@ -102,7 +76,7 @@ function PaginationBar({
         type="button"
         onClick={() => onChange(current - 1)}
         disabled={current === 1}
-        className="px-3 py-1.5 text-sm text-neutral-500 hover:bg-neutral-100 rounded-lg disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+        className="min-h-11 px-3 py-1.5 text-sm text-neutral-500 hover:bg-neutral-100 rounded-lg disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
       >
         이전
       </button>
@@ -116,7 +90,7 @@ function PaginationBar({
             key={p}
             type="button"
             onClick={() => onChange(p as number)}
-            className={`w-8 h-8 text-sm rounded-lg transition-colors ${
+            className={`w-11 h-11 text-sm rounded-lg transition-colors ${
               p === current
                 ? "bg-primary text-white"
                 : "text-neutral-500 hover:bg-neutral-100"
@@ -130,7 +104,7 @@ function PaginationBar({
         type="button"
         onClick={() => onChange(current + 1)}
         disabled={current === total}
-        className="px-3 py-1.5 text-sm text-neutral-500 hover:bg-neutral-100 rounded-lg disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+        className="min-h-11 px-3 py-1.5 text-sm text-neutral-500 hover:bg-neutral-100 rounded-lg disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
       >
         다음
       </button>
@@ -142,17 +116,14 @@ function PaginationBar({
 function SearchFallback() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="h-7 w-48 bg-neutral-100 rounded-lg animate-pulse mb-6" />
       <div className="flex gap-8">
         <div className="hidden md:block w-60 shrink-0 space-y-2">
           {Array.from({ length: 8 }).map((_, i) => (
             <div key={i} className="h-8 bg-neutral-100 rounded-lg animate-pulse" />
           ))}
         </div>
-        <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="rounded-2xl border border-neutral-100 bg-white p-5 h-52 animate-pulse" />
-          ))}
+        <div className="flex-1">
+          <LoadingState rows={6} />
         </div>
       </div>
     </div>
@@ -208,7 +179,7 @@ function SearchContent() {
   }
 
   // ── API 쿼리 ────────────────────────────────────────────────────────────
-  const { data: result, isLoading } = useQuery({
+  const { data: result, isLoading, isError, refetch } = useQuery({
     queryKey: ["resources", { q, category, level, type: typeParam, sort, page }],
     queryFn: async () => {
       const params = new URLSearchParams()
@@ -297,7 +268,7 @@ function SearchContent() {
                   <button
                     type="button"
                     onClick={() => setMobileOpen(false)}
-                    className="w-full rounded-xl py-3 bg-primary hover:bg-primary-dark text-white text-sm font-medium transition-colors"
+                    className="w-full min-h-11 rounded-xl py-3 bg-primary hover:bg-primary-dark text-white text-sm font-medium transition-colors"
                   >
                     적용하기
                   </button>
@@ -317,13 +288,15 @@ function SearchContent() {
 
           {/* 결과 or 빈 상태 */}
           {isLoading ? (
-            <div className={view === "grid" ? "grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4" : "flex flex-col divide-y divide-neutral-100"}>
-              {Array.from({ length: PAGE_SIZE }).map((_, i) => (
-                <div key={i} className="rounded-2xl border border-neutral-100 bg-white p-5 h-52 animate-pulse" />
-              ))}
-            </div>
+            <LoadingState rows={PAGE_SIZE} />
+          ) : isError ? (
+            <ErrorState
+              title="검색 결과를 불러오지 못했어요"
+              description="네트워크 상태를 확인한 뒤 다시 시도해주세요."
+              onRetry={() => { void refetch() }}
+            />
           ) : total === 0 ? (
-            <EmptyState q={q} onReset={handleReset} />
+            <SearchEmptyState q={q} hasFilters={activeFilterCount > 0} onReset={handleReset} />
           ) : (
             <>
               <div className={view === "grid" ? "grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4" : "flex flex-col divide-y divide-neutral-100"}>

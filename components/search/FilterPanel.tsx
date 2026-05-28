@@ -59,7 +59,7 @@ export default function FilterPanel({ selected, onChange, onReset }: Props) {
           <button
             type="button"
             onClick={onReset}
-            className="flex items-center gap-1.5 text-xs text-neutral-400 hover:text-primary transition-colors"
+            className="flex min-h-11 items-center gap-1.5 text-xs text-neutral-400 hover:text-primary transition-colors"
           >
             필터 초기화
             <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-primary/10 text-primary text-[10px] font-bold">
@@ -79,7 +79,7 @@ export default function FilterPanel({ selected, onChange, onReset }: Props) {
             key={cat.value}
             type="button"
             onClick={() => onChange("category", cat.value)}
-            className={`text-sm py-1.5 px-3 rounded-lg w-full text-left transition-colors ${
+            className={`text-sm min-h-11 py-1.5 px-3 rounded-lg w-full text-left transition-colors ${
               selected.category === cat.value
                 ? "bg-primary/10 text-primary font-medium"
                 : "text-neutral-600 hover:bg-neutral-100"
@@ -100,7 +100,7 @@ export default function FilterPanel({ selected, onChange, onReset }: Props) {
             key={lvl.value}
             type="button"
             onClick={() => onChange("level", lvl.value)}
-            className={`text-sm py-1.5 px-3 rounded-lg w-full text-left transition-colors ${
+            className={`text-sm min-h-11 py-1.5 px-3 rounded-lg w-full text-left transition-colors ${
               selected.level === lvl.value
                 ? "bg-primary/10 text-primary font-medium"
                 : "text-neutral-600 hover:bg-neutral-100"
@@ -123,7 +123,7 @@ export default function FilterPanel({ selected, onChange, onReset }: Props) {
               key={typ.value}
               type="button"
               onClick={() => toggleType(typ.value)}
-              className={`text-sm py-1.5 px-3 rounded-lg w-full text-left transition-colors flex items-center gap-2 ${
+              className={`text-sm min-h-11 py-1.5 px-3 rounded-lg w-full text-left transition-colors flex items-center gap-2 ${
                 checked
                   ? "bg-primary/10 text-primary font-medium"
                   : "text-neutral-600 hover:bg-neutral-100"

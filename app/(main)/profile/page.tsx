@@ -19,8 +19,8 @@ export default async function ProfilePage() {
       <div className="max-w-2xl mx-auto px-4 sm:px-6 py-12 space-y-5">
 
         {/* 프로필 카드 */}
-        <div className="rounded-2xl border border-neutral-100 bg-white p-8">
-          <div className="flex items-center gap-5">
+        <div className="rounded-2xl border border-neutral-100 bg-white p-5 sm:p-8">
+          <div className="flex items-center gap-4 sm:gap-5">
             {user?.image ? (
               <Image
                 src={user.image}
@@ -31,14 +31,14 @@ export default async function ProfilePage() {
                 unoptimized
               />
             ) : (
-              <div className="w-18 h-18 w-[72px] h-[72px] rounded-full bg-primary/10 flex items-center justify-center text-primary text-xl font-bold shrink-0">
+              <div className="w-[72px] h-[72px] rounded-full bg-primary/10 flex items-center justify-center text-primary text-xl font-bold shrink-0">
                 {initials}
               </div>
             )}
-            <div>
+            <div className="min-w-0">
               <p className="text-xl font-bold text-neutral-900">{user?.name ?? '이름 없음'}</p>
-              <p className="text-sm text-neutral-400 mt-0.5">{user?.email}</p>
-              {(user as any)?.role === 'admin' && (
+              <p className="text-sm text-neutral-400 mt-0.5 break-all">{user?.email}</p>
+              {(user as { role?: string })?.role === 'admin' && (
                 <span className="inline-block mt-1.5 text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary font-medium">
                   관리자
                 </span>
@@ -53,7 +53,7 @@ export default async function ProfilePage() {
         {/* My Loop 바로가기 */}
         <Link
           href="/my-loop"
-          className="flex items-center justify-between rounded-2xl border border-neutral-100 bg-white px-6 py-4 hover:border-primary/30 hover:bg-primary/5 transition-colors group"
+          className="flex min-h-11 items-center justify-between rounded-2xl border border-neutral-100 bg-white px-6 py-4 hover:border-primary/30 hover:bg-primary/5 transition-colors group"
         >
           <div>
             <p className="text-sm font-semibold text-neutral-800">My Loop 보기</p>

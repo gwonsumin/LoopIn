@@ -50,14 +50,14 @@ export function LearningHistory({ resources }: { resources: Resource[] }) {
       <h2 className="text-lg font-bold text-neutral-900 mb-4">학습 히스토리</h2>
       <div className="bg-white rounded-2xl border border-neutral-100 divide-y divide-neutral-100">
         {history.map(item => (
-          <div key={item.resource.id} className="flex items-center gap-4 px-5 py-4">
+          <div key={item.resource.id} className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 px-5 py-4">
             {/* 상태 도트 */}
             <div className={`w-2.5 h-2.5 rounded-full shrink-0 ${
               item.status === 'completed' ? 'bg-emerald-400' : 'bg-primary'
             }`} />
 
             {/* 정보 */}
-            <div className="flex-1 min-w-0">
+            <div className="w-full flex-1 min-w-0">
               <p className="text-sm font-medium text-neutral-800 line-clamp-1">
                 {item.resource.title}
               </p>
@@ -75,11 +75,11 @@ export function LearningHistory({ resources }: { resources: Resource[] }) {
             </div>
 
             {/* 날짜 + 링크 */}
-            <div className="flex items-center gap-3 shrink-0">
+            <div className="flex w-full sm:w-auto items-center justify-between sm:justify-start gap-3 shrink-0">
               <span className="text-xs text-neutral-400">{formatDate(item.updatedAt)}</span>
               <Link
                 href={`/resources/${item.resource.id}/learn`}
-                className="text-xs px-3 py-1.5 rounded-lg bg-neutral-100 hover:bg-neutral-200 text-neutral-600 transition-colors"
+                className="inline-flex min-h-11 items-center px-3 py-1.5 rounded-lg bg-neutral-100 hover:bg-neutral-200 text-neutral-600 transition-colors text-xs"
               >
                 {item.status === 'completed' ? '다시 보기' : '이어보기'}
               </Link>

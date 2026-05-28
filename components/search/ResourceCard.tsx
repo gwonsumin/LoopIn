@@ -61,10 +61,10 @@ export function ResourceCard({ resource, view = "grid" }: Props) {
     return (
       <Link
         href={`/resources/${resource.id}`}
-        className="group flex flex-row items-start gap-4 p-4 rounded-2xl border border-neutral-100 bg-white hover:shadow-md transition-all duration-200"
+        className="group flex flex-col sm:flex-row items-start gap-4 p-4 rounded-2xl border border-neutral-100 bg-white hover:shadow-md transition-all duration-200"
       >
         {/* 좌측 썸네일 */}
-        <div className="w-[140px] h-[100px] shrink-0 rounded-xl bg-neutral-100 overflow-hidden flex items-center justify-center">
+        <div className="w-full h-36 sm:w-[140px] sm:h-[100px] shrink-0 rounded-xl bg-neutral-100 overflow-hidden flex items-center justify-center">
           {resource.thumbnail ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -118,7 +118,7 @@ export function ResourceCard({ resource, view = "grid" }: Props) {
         <button
           type="button"
           onClick={handleSave}
-          className={`w-8 h-8 shrink-0 self-center flex items-center justify-center rounded-lg hover:text-primary transition-colors ${
+          className={`w-11 h-11 shrink-0 self-end sm:self-center flex items-center justify-center rounded-lg hover:text-primary transition-colors ${
             saved ? "text-primary" : "text-neutral-300"
           }`}
           aria-label="저장하기"

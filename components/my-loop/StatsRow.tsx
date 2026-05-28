@@ -48,7 +48,7 @@ const MOCK_VALUES: Record<string, string> = {
 
 export function StatsRow({ savedCount, inProgressCount, flowCount }: Props) {
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       {STATS.map(({ icon: Icon, iconBg, iconColor, label, sub, key }) => {
         let value: string
         if (key === "saved") value = `${savedCount}개`
