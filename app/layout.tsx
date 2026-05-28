@@ -12,9 +12,33 @@ const pretendard = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "LoopIn — 디지털 직무 학습 플랫폼",
-  description:
-    "검색하고, 저장하고, 이어 배우세요. 나만의 학습 루프를 만들어보세요.",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL ?? 'https://loopin.vercel.app'),
+  title: {
+    default: 'LoopIn — 내 학습 흐름을 설계하는 공간',
+    template: '%s | LoopIn',
+  },
+  description: '강의를 검색하고, 저장하고, 이어서 배우세요. 나만의 디지털 직무 학습 루프를 만들어보세요.',
+  openGraph: {
+    type: 'website',
+    locale: 'ko_KR',
+    siteName: 'LoopIn',
+    title: 'LoopIn — 내 학습 흐름을 설계하는 공간',
+    description: '강의를 검색하고, 저장하고, 이어서 배우세요. 나만의 디지털 직무 학습 루프를 만들어보세요.',
+    images: [
+      {
+        url: '/og/LoopIn-og.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'LoopIn — 디지털 직무 학습 탐색 플랫폼',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'LoopIn — 내 학습 흐름을 설계하는 공간',
+    description: '강의를 검색하고, 저장하고, 이어서 배우세요.',
+    images: ['/og/LoopIn-og.jpg'],
+  },
 };
 
 export default function RootLayout({

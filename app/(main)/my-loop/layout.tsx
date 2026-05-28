@@ -1,6 +1,12 @@
+import type { Metadata } from 'next'
 import Link from "next/link"
 import Image from "next/image"
 import { Bookmark, PlayCircle, Clock } from "lucide-react"
+
+export const metadata: Metadata = {
+  title: 'My Loop',
+  description: '저장한 강의와 자료를 모아보고, 이어서 학습해보세요.',
+}
 
 const NAV_LINKS = [
   { label: "My Loop",     href: "/my-loop", icon: Bookmark,   active: true  },

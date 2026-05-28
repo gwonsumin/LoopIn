@@ -112,10 +112,18 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { id } = await params
   const resource = await getResource(id)
-  if (!resource) return {}
+  if (!resource) return { title: '자료를 찾을 수 없어요' }
+
   return {
-    title: `${resource.title} — LoopIn`,
+    title: resource.title,
     description: resource.description,
+    openGraph: {
+      title: `${resource.title} | LoopIn`,
+      description: resource.description,
+      images: resource.thumbnail
+        ? [{ url: resource.thumbnail, width: 1200, height: 630, alt: resource.title }]
+        : [{ url: '/og/LoopIn-og.jpg', width: 1200, height: 630, alt: 'LoopIn' }],
+    },
   }
 }
 

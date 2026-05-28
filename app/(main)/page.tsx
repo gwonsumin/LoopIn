@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import { auth } from "@/auth"
 import { connectDB } from "@/lib/mongodb"
 import { Loop } from "@/lib/models/Loop"
@@ -13,6 +14,15 @@ import RevealSection from "@/components/home/RevealSection"
 import { mockFlows } from "@/lib/mock/flows"
 import { mockCategories } from "@/lib/mock/categories"
 import { mockResources } from "@/lib/mock/resources"
+
+export const metadata: Metadata = {
+  title: '홈',
+  description: '지금 뜨는 디지털 직무 강의를 탐색하고, 나만의 학습 루프를 시작해보세요.',
+  openGraph: {
+    title: 'LoopIn — 내 학습 흐름을 설계하는 공간',
+    description: '지금 뜨는 디지털 직무 강의를 탐색하고, 나만의 학습 루프를 시작해보세요.',
+  },
+}
 
 async function getRecentSaved(email: string): Promise<Resource[]> {
   try {
