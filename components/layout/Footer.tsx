@@ -18,28 +18,14 @@ const CATEGORY_LINKS = [
 const SOCIAL_LINKS = [
   {
     label: "GitHub",
-    href: "https://github.com",
+    href: "https://github.com/gwonsumin",
     defaultIcon: "/icons/github-default.svg",
     hoverIcon: "/icons/github-hover.svg",
-  },
-  {
-    label: "Instagram",
-    href: "https://instagram.com",
-    defaultIcon: "/icons/instagram-default.svg",
-    hoverIcon: "/icons/instagram-hover.svg",
-  },
-  {
-    label: "YouTube",
-    href: "https://youtube.com",
-    defaultIcon: "/icons/youtube-default.svg",
-    hoverIcon: "/icons/youtube-hover.svg",
   },
 ]
 
 const SERVICE_LINKS = [
   { label: "자료 등록", href: "/resources/new" },
-  { label: "공지사항", href: "#" },
-  { label: "문의하기", href: "#" },
 ]
 
 export function Footer() {
