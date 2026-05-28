@@ -12,6 +12,7 @@ import NewsletterSection from "@/components/home/NewsletterSection"
 import RevealSection from "@/components/home/RevealSection"
 import { mockFlows } from "@/lib/mock/flows"
 import { mockCategories } from "@/lib/mock/categories"
+import { mockResources } from "@/lib/mock/resources"
 
 async function getRecentSaved(email: string): Promise<Resource[]> {
   try {
@@ -53,9 +54,11 @@ async function getRecentSaved(email: string): Promise<Resource[]> {
 
 export default async function HomePage() {
   const session = await auth()
-  const recentSaved: Resource[] = session?.user?.email
-    ? await getRecentSaved(session.user.email)
-    : []
+  const recentSaved: Resource[] = session?.user?.email === 'test@loopin.kr'
+    ? mockResources.filter(r => ['r-001', 'r-002', 'r-003', 'r-005', 'r-006', 'r-017'].includes(r.id))
+    : session?.user?.email
+      ? await getRecentSaved(session.user.email)
+      : []
 
   return (
     <>
