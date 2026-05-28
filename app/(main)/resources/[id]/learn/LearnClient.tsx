@@ -55,6 +55,8 @@ export function LearnClient({ resource, related }: { resource: Resource; related
 
   const [status, setStatus] = useState<ProgressStatus>('not_started')
   const [percent, setPercent] = useState(0)
+  const [nextResourceId, setNextResourceId] = useState<string | null>(null)
+  const [currentFlowTitle, setCurrentFlowTitle] = useState<string | null>(null)
 
   const DEMO_VIDEO_ID = 'Tn6-PIqc4UM'
   const youtubeId = extractYouTubeId(resource.url) ?? DEMO_VIDEO_ID
@@ -89,6 +91,38 @@ export function LearnClient({ resource, related }: { resource: Resource; related
     return () => clearInterval(timer)
   }, [status, storageKey])
 
+  // Custom Flow / 큐레이션 Flow에서 다음 자료 찾기
+  useEffect(() => {
+    // 1. 사용자 커스텀 Flow 확인
+    const raw = localStorage.getItem("loopin-my-flows")
+    if (raw) {
+      try {
+        const myFlows: { id: string; title: string; resourceIds: string[] }[] = JSON.parse(raw)
+        const found = myFlows.find(f => f.resourceIds.includes(resource.id))
+        if (found) {
+          const idx = found.resourceIds.indexOf(resource.id)
+          const next = found.resourceIds[idx + 1]
+          if (next) {
+            setNextResourceId(next)
+            setCurrentFlowTitle(found.title)
+            return
+          }
+        }
+      } catch {}
+    }
+
+    // 2. 큐레이션 Flow(mockFlows) 확인
+    const curatedFlow = mockFlows.find(f => f.steps.some(s => s.resourceId === resource.id))
+    if (curatedFlow) {
+      const step = curatedFlow.steps.find(s => s.resourceId === resource.id)
+      const nextStep = curatedFlow.steps.find(s => s.order === (step?.order ?? 0) + 1)
+      if (nextStep?.resourceId) {
+        setNextResourceId(nextStep.resourceId)
+        setCurrentFlowTitle(curatedFlow.title)
+      }
+    }
+  }, [resource.id])
+
   function handleComplete() {
     const data: ProgressData = { status: 'completed', percent: 100, updatedAt: new Date().toISOString() }
     localStorage.setItem(storageKey, JSON.stringify(data))
@@ -113,6 +147,11 @@ export function LearnClient({ resource, related }: { resource: Resource; related
         </Link>
         <p className="flex-1 text-sm font-medium text-neutral-800 truncate">{resource.title}</p>
         <div className="flex items-center gap-2 shrink-0">
+          {currentFlowTitle && (
+            <span className="hidden sm:block text-xs text-neutral-400 truncate max-w-[120px]">
+              {currentFlowTitle}
+            </span>
+          )}
           <span className="text-xs text-neutral-400">{displayPercent}%</span>
           {status === 'completed' ? (
             <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-medium border border-emerald-100">
@@ -185,13 +224,21 @@ export function LearnClient({ resource, related }: { resource: Resource; related
           <div className="rounded-2xl bg-white/5 border border-white/10 p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
               <p className="text-sm font-semibold text-white">🎉 학습 완료!</p>
-              {relatedFlow && (
+              {(currentFlowTitle ?? relatedFlow?.title) && (
                 <p className="text-xs text-neutral-400 mt-0.5">
-                  이 자료는 <span className="text-primary">{relatedFlow.title}</span>의 일부예요
+                  이 자료는 <span className="text-primary">{currentFlowTitle ?? relatedFlow?.title}</span>의 일부예요
                 </p>
               )}
             </div>
             <div className="flex items-center gap-2 shrink-0">
+              {nextResourceId && (
+                <Link
+                  href={`/resources/${nextResourceId}/learn`}
+                  className="px-4 py-2 rounded-xl bg-white text-primary border border-primary/30 hover:bg-primary/5 text-xs font-medium transition-colors"
+                >
+                  다음 자료로 →
+                </Link>
+              )}
               {relatedFlow && (
                 <Link
                   href={`/flows/${relatedFlow.slug}`}

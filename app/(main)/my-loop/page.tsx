@@ -219,7 +219,7 @@ export default function MyLoopPage() {
           <>
             <StatsRow savedCount={resources.length} inProgressCount={inProgressCount} />
             <ContinuingSection resources={resources} />
-            <MyFlowsSection />
+            <MyFlowsSection resources={resources} />
 
             {/* 최근 저장한 자료 */}
             <section>
