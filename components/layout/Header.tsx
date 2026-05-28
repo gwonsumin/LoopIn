@@ -17,7 +17,7 @@ import SearchOverlay from "@/components/search/SearchOverlay";
 
 function clearUserLocalStorage() {
   Object.keys(localStorage)
-    .filter(k => k.startsWith('loopin-'))
+    .filter(k => k.startsWith('loopin-') || k.startsWith('loopin_'))
     .forEach(k => localStorage.removeItem(k))
 }
 
