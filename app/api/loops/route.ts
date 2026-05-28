@@ -5,6 +5,7 @@ import { Resource } from '@/lib/models/Resource'
 import { User } from '@/lib/models/User'
 import { auth } from '@/auth'
 import mongoose from 'mongoose'
+import { mockResources } from '@/lib/mock/resources'
 
 async function getUploader(email: string) {
   return User.findOneAndUpdate(
@@ -18,6 +19,13 @@ export async function GET(_req: NextRequest) {
   const session = await auth()
   if (!session?.user?.email) {
     return NextResponse.json({ error: '로그인이 필요합니다.' }, { status: 401 })
+  }
+
+  const DEMO_IDS = ['r-001', 'r-002', 'r-003', 'r-005', 'r-006', 'r-017', 'r-018', 'r-009']
+
+  if (session.user.email === 'test@loopin.kr') {
+    const resources = mockResources.filter(r => DEMO_IDS.includes(r.id))
+    return NextResponse.json({ data: resources })
   }
 
   await connectDB()
