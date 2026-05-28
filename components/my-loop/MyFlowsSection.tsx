@@ -1,112 +1,116 @@
+'use client'
+import { useState, useEffect } from "react"
 import Link from "next/link"
-import { Check } from "lucide-react"
-import { mockFlows } from "@/lib/mock/flows"
-import type { Flow } from "@/lib/types"
+import { Plus } from "lucide-react"
+import type { Resource } from "@/lib/types"
+import { CreateFlowModal } from "./CreateFlowModal"
 
-const THEME_COLOR: Record<string, string> = {
-  pink:  "#F96A84",
-  blue:  "#3B82F6",
-  green: "#10B981",
+interface MyCustomFlow {
+  id: string
+  title: string
+  resourceIds: string[]
+  createdAt: string
 }
 
-function StepIcon({
-  status,
-  index,
-  color,
-}: {
-  status: "done" | "current" | "pending"
-  index: number
-  color: string
-}) {
-  if (status === "done") {
-    return (
-      <div
-        className="w-9 h-9 rounded-full flex items-center justify-center"
-        style={{ backgroundColor: `${color}1A` }}
-      >
-        <Check className="w-4 h-4" style={{ color }} />
-      </div>
-    )
-  }
-  if (status === "current") {
-    return (
-      <div
-        className="w-9 h-9 rounded-full flex items-center justify-center"
-        style={{ backgroundColor: `${color}33` }}
-      >
-        <span className="text-xs font-semibold" style={{ color }}>
-          {index + 1}
-        </span>
-      </div>
-    )
-  }
-  return (
-    <div className="w-9 h-9 rounded-full flex items-center justify-center bg-neutral-100">
-      <span className="text-xs font-medium text-neutral-400">{index + 1}</span>
-    </div>
-  )
-}
-
-function FlowCard({ flow }: { flow: Flow }) {
-  const color = THEME_COLOR[flow.theme] ?? "#F96A84"
+function CustomFlowCard({ flow, resources }: { flow: MyCustomFlow; resources: Resource[] }) {
+  const flowResources = flow.resourceIds
+    .map(id => resources.find(r => r.id === id))
+    .filter(Boolean) as Resource[]
+  const firstId = flow.resourceIds[0]
 
   return (
-    <div className="rounded-2xl bg-white border border-neutral-100 p-5">
-      {/* 상단 행 */}
+    <div className="rounded-2xl bg-white border border-neutral-100 p-5 flex flex-col gap-3">
       <div className="flex items-center justify-between">
-        <p className="text-sm font-semibold text-neutral-900 truncate mr-2">
-          {flow.title}
-        </p>
+        <p className="text-sm font-semibold text-neutral-900 truncate mr-2">{flow.title}</p>
         <span className="text-xs text-neutral-400 bg-neutral-50 px-2 py-0.5 rounded-full shrink-0">
-          {flow.cardSteps.length}단계
+          {flow.resourceIds.length}개 자료
         </span>
       </div>
 
-      {/* 스텝 아이콘 행 */}
-      <div className="flex items-start gap-1 mt-4">
-        {flow.cardSteps.map((step, i) => (
-          <div key={step.label} className="flex items-center gap-1">
-            <div className="flex flex-col items-center">
-              <StepIcon status={step.status} index={i} color={color} />
-              <span className="text-[10px] text-neutral-400 text-center mt-1 w-10 leading-tight truncate">
-                {step.label}
-              </span>
-            </div>
-            {i < flow.cardSteps.length - 1 && (
-              <span className="text-xs text-neutral-300 mb-4">→</span>
-            )}
+      <div className="space-y-1.5">
+        {flowResources.slice(0, 2).map((r, i) => (
+          <div key={r.id} className="flex items-center gap-2">
+            <span className="w-4 h-4 rounded-full bg-primary/10 text-primary text-[10px] font-bold flex items-center justify-center shrink-0">
+              {i + 1}
+            </span>
+            <p className="text-xs text-neutral-600 line-clamp-1">{r.title}</p>
           </div>
         ))}
+        {flowResources.length > 2 && (
+          <p className="text-xs text-neutral-400 pl-6">+{flowResources.length - 2}개 더</p>
+        )}
       </div>
 
-      {/* 하단 행 */}
-      <div className="flex items-center justify-between mt-4 pt-4 border-t border-neutral-100">
-        <span className="text-xs text-neutral-500">{flow.totalResources}개 자료</span>
-        <span className="text-xs text-neutral-400">업데이트: 2일 전</span>
+      <div className="pt-3 border-t border-neutral-100">
+        <Link
+          href={firstId ? `/resources/${firstId}/learn` : "/my-loop"}
+          className="block w-full py-2 rounded-xl bg-primary/10 hover:bg-primary/20 text-primary text-xs font-medium text-center transition-colors"
+        >
+          학습 시작하기 →
+        </Link>
       </div>
     </div>
   )
 }
 
-export function MyFlowsSection() {
-  const flows = mockFlows.slice(0, 3)
+export function MyFlowsSection({ resources }: { resources: Resource[] }) {
+  const [myFlows, setMyFlows] = useState<MyCustomFlow[]>([])
+  const [showModal, setShowModal] = useState(false)
+
+  useEffect(() => {
+    const raw = localStorage.getItem("loopin-my-flows")
+    if (raw) {
+      try { setMyFlows(JSON.parse(raw)) } catch {}
+    }
+  }, [])
+
+  function handleSave(flow: MyCustomFlow) {
+    const updated = [flow, ...myFlows]
+    setMyFlows(updated)
+    localStorage.setItem("loopin-my-flows", JSON.stringify(updated))
+  }
 
   return (
     <section>
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-bold text-neutral-900">내 학습 Flow</h2>
-        <Link
-          href="/search?view=flows"
-          className="text-sm text-neutral-400 hover:text-primary transition-colors"
+        <button
+          type="button"
+          onClick={() => setShowModal(true)}
+          className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:text-primary-dark transition-colors"
         >
-          전체 보기 &gt;
-        </Link>
+          <Plus className="w-4 h-4" />
+          Flow 만들기
+        </button>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {flows.map((flow) => (
-          <FlowCard key={flow.id} flow={flow} />
-        ))}
-      </div>
+
+      {myFlows.length === 0 ? (
+        <div className="rounded-2xl border border-dashed border-neutral-200 p-8 text-center">
+          <p className="text-sm text-neutral-400 mb-3">아직 만든 Flow가 없어요</p>
+          <button
+            type="button"
+            onClick={() => setShowModal(true)}
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary text-white text-sm font-medium hover:bg-primary-dark transition-colors"
+          >
+            <Plus className="w-4 h-4" />
+            첫 번째 Flow 만들기
+          </button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {myFlows.map(flow => (
+            <CustomFlowCard key={flow.id} flow={flow} resources={resources} />
+          ))}
+        </div>
+      )}
+
+      {showModal && (
+        <CreateFlowModal
+          resources={resources}
+          onClose={() => setShowModal(false)}
+          onSave={handleSave}
+        />
+      )}
     </section>
   )
 }
