@@ -208,6 +208,14 @@ function SearchContent() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-16">
+      {/* 모바일 필터 backdrop */}
+      {mobileOpen && (
+        <div
+          className="md:hidden fixed inset-0 bg-black/40 z-[41]"
+          onClick={() => setMobileOpen(false)}
+        />
+      )}
+
       {/* 헤더 */}
       <h1 className="text-xl font-bold text-neutral-900 mb-6">
         {q ? `"${q}" 검색 결과 ${total}개` : `전체 자료 ${total}개`}

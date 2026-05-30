@@ -406,6 +406,14 @@ export function Header() {
         </div>
       </header>
 
+      {/* 모바일 네비게이션 backdrop */}
+      {mobileOpen && (
+        <div
+          className="md:hidden fixed inset-0 bg-black/40 z-[41]"
+          onClick={() => setMobileOpen(false)}
+        />
+      )}
+
       <SearchOverlay isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
     </>
   );
