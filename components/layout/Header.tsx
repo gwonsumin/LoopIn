@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -407,11 +408,12 @@ export function Header() {
       </header>
 
       {/* 모바일 네비게이션 backdrop */}
-      {mobileOpen && (
+      {mobileOpen && typeof document !== "undefined" && createPortal(
         <div
-          className="md:hidden fixed inset-0 bg-black/40 z-[41]"
+          className="md:hidden fixed inset-0 bg-black/40 z-[49]"
           onClick={() => setMobileOpen(false)}
-        />
+        />,
+        document.body
       )}
 
       <SearchOverlay isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
